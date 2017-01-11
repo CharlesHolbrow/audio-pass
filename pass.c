@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <portaudio.h>
 
+#include "CCRing.h"
 
 #define SAMPLE_RATE (44100)
 
