@@ -1,20 +1,65 @@
-PORTAUDIO_LIB_DIR := ../portaudio/lib/.libs/
-PORTAUDIO_INC_DIR := ../portaudio/include/
+PORTAUDIO_DIR ?= ../portaudio/
+PORTAUDIO_LIB_DIR := $(PORTAUDIO_DIR)/lib/.libs/
+PORTAUDIO_INC_DIR := $(PORTAUDIO_DIR)/include/
 PORTAUDIO_LIB := ${PORTAUDIO_LIB_DIR}libportaudio.a
 OSX_FRAMEWORKS := -framework CoreAudio -framework AudioToolbox -framework AudioUnit -framework CoreServices -framework Carbon
 
-
+O_DIR := .o/
+I_DIR := include/
+T_DIR := tests/
 CC := gcc
+CFLAGS := -I$(I_DIR) -I$(PORTAUDIO_INC_DIR)
 
+# We generate .o files for all c files in the root dir. Note
+# that we intentionally omit .c files in the tests dir
+C_FILES = $(shell find * -type f -iname "*.c" -maxdepth 0)
+O_FILES = $(patsubst %.c, $(O_DIR)%.o, $(C_FILES))
+H_FILES = $(shell find $(I_DIR)/* -type f -iname "*.h")
 
+# the -exec basename option gives us only the filename without
+# the path.
+TEST_C_FILES = $(shell find ./tests/* -type f -iname "*.c" -exec basename {} \;)
+TEST_O_FILES = $(patsubst %.c, $(O_DIR)%.o, $(TEST_C_FILES))
+TESTS = $(patsubst %.c, %, $(TEST_C_FILES))
 
-# If both a static and a shared lib are available, gcc chooses the shared link
-# Pass in the .lib<name>.a directly to avoid issues
-pass: pass.c
-	$(CC)  $(OSX_FRAMEWORKS) -I$(PORTAUDIO_INC_DIR) $(PORTAUDIO_LIB) pass.c -o pass
+# Note that each .o file depends on ALL the header files in the
+# include dir. This is slightly inefficient because if a single
+# header changes all .o files will need to be re-compiled.
+$(O_DIR)%.o : %.c $(H_FILES)
+	$(CC) -c -o $@ $< $(CFLAGS)
 
-CCRing.o: CCRing.c
-	$(CC) -o CCRing.o -c CCRing.c
+$(O_DIR)%.o : $(T_DIR)%.c $(H_FILES)
+	$(CC) -c -o $@ $< $(CFLAGS)
 
-testCCRing: CCRing.o testCCRing.o
-	$(CC) -o testCCRing CCRing.c testCCRing.c
+# If both a static and a shared lib are available, gcc links the
+# shared lib. Pass in the .libportaudio.a directly to avoid
+# issues. This is an alternative to the traditional aproach of
+# using the -l and -L: $ gcc -lportaudio -L$(PORTAUDIO_LIB_DIR)
+./bin/pass: $(O_FILES)
+	$(CC)  $(OSX_FRAMEWORKS) $(PORTAUDIO_LIB) $(O_FILES) -o $@
+
+# This is a 'static pattern rule' so "$*" in the recipe matches
+# the the part of the filename that matched % in the target
+# pattern.
+#
+# This rule lets uss write any test that depends on a %.o file
+# and a %.h file. Example usage:
+# $ make testCCRing
+./bin/test% : $(O_DIR)test%.o $(O_DIR)%.o $(I_DIR)%.h
+	$(CC) -o ./bin/test$* $< $(O_DIR)$*.o $(CFLAGS)
+
+tests: ./bin/testCCRing
+
+.PHONY: clean debug tests
+.SECONDARY: $(O_FILES) $(TEST_O_FILES)
+
+clean:
+	rm -f $(O_DIR)/*.o # remove object files
+	rm bin/[^.]* # remove executables, but not .gitignore
+
+debug:
+	@echo C_FILES: $(C_FILES)
+	@echo TESTS: $(TESTS)
+	@echo O_FILES: $(O_FILES)
+	@echo TEST_O_FILES: $(TEST_O_FILES)
+

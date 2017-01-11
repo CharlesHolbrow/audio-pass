@@ -5,9 +5,9 @@ int main(int argc, char** argv) {
   int size = 16;
 
   CCRing* ring = createRing(size);
-  float * pData = ring->data;
+  float* pData = ring->data;
 
-  for (int i = 0; i  < size; i++) {
+  for (int i = 0; i < size; i++) {
     *(pData++) = i * 2;
   }
 

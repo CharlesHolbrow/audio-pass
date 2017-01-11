@@ -16,8 +16,7 @@ typedef struct CCRing {
 } CCRing;
 
 
-typedef enum CCError
-{
+typedef enum CCError {
   ccNoError = 0,
   ccError = -1000
 } CCError;
