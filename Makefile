@@ -23,13 +23,15 @@ PORTAUDIO_DIR ?= ../portaudio
 PORTAUDIO_LIB_DIR := $(PORTAUDIO_DIR)/lib/.libs
 PORTAUDIO_INC_DIR := $(PORTAUDIO_DIR)/include
 PORTAUDIO_LIB := ${PORTAUDIO_LIB_DIR}/libportaudio.a
+CUNIT_INC_DIR := /usr/local/include
+CUNIT_LIB_DIR := /usr/local/lib
 OSX_FRAMEWORKS := -framework CoreAudio -framework AudioToolbox -framework AudioUnit -framework CoreServices -framework Carbon
 
 O_DIR := .o
 I_DIR := include
 T_DIR := tests
 CC := gcc
-CFLAGS := -I$(I_DIR) -I$(PORTAUDIO_INC_DIR)
+CFLAGS := -I$(I_DIR) -I$(PORTAUDIO_INC_DIR) -I$(CUNIT_INC_DIR)
 
 # We generate .o files for all c files in the root dir. Note
 # that we intentionally omit .c files in the tests dir
@@ -69,7 +71,7 @@ bin/pass : $(O_FILES)
 # and a %.h file. Example usage:
 # $ make testCCRing
 bin/test% : $(O_DIR)/test%.o $(O_DIR)/%.o $(I_DIR)/%.h
-	$(CC) -o ./bin/test$* $< $(O_DIR)/$*.o $(CFLAGS)
+	$(CC) -o ./bin/test$* $< $(O_DIR)/$*.o $(CFLAGS) -lcunit -L$(CUNIT_LIB_DIR)
 
 tests: $(patsubst %, bin/%, $(TESTS))
 
