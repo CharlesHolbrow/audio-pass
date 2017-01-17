@@ -35,7 +35,7 @@ CFLAGS := -I$(I_DIR) -I$(PORTAUDIO_INC_DIR) -I$(CUNIT_INC_DIR)
 
 # We generate .o files for all c files in the root dir. Note
 # that we intentionally omit .c files in the tests dir
-C_FILES = $(shell find * -type f -iname "*.c" -maxdepth 0)
+C_FILES = $(shell find * -maxdepth 0 -type f -iname "*.c")
 O_FILES = $(patsubst %.c, $(O_DIR)/%.o, $(C_FILES))
 H_FILES = $(shell find $(I_DIR)/* -type f -iname "*.h")
 
