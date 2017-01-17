@@ -1,10 +1,10 @@
-#import <stdio.h>
-#import <stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
 // tests
-#import <CUnit/cunit.h>
+#include <CUnit/CUnit.h>
 #include <CUnit/Console.h>
 // local imports
-#import "CCRing.h"
+#include "CCRing.h"
 
 
 void simple_test(void) {
