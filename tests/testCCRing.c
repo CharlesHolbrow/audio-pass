@@ -3,6 +3,7 @@
 // tests
 #include <CUnit/CUnit.h>
 #include <CUnit/Console.h>
+#include <CUnit/Basic.h>
 // local imports
 #include "CCRing.h"
 
@@ -14,6 +15,14 @@ void simple_test(void) {
 void should_fail(void) {
   CU_ASSERT_EQUAL(1, 2);
 }
+
+int test array(array1, array2, ) {
+  if =
+    return 1
+  if != 
+    return 0;
+}
+
 
 int main(int argc, char** argv) {
 
@@ -38,6 +47,8 @@ int main(int argc, char** argv) {
   // CU_console_run_tests(); // interactive console
   CU_basic_run_tests(); // results to stdout
   CU_cleanup_registry();
+
+  printf("testing");
 
   return 1;
 }
