@@ -8,7 +8,7 @@ Tools for real-time audio re-synthesis.
 - For Compliation: [portaudio](http://www.portaudio.com/docs.html)
 
 For now the makefile expects that portaudio be compiled manually. The make file
-expects for the `portaudio` directory in the same directory as `audio-pass`.
+expects to find `./portaudio/`  `./audio-pass/` in the same directory.
 
 ```
 ./portaudio/
