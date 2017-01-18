@@ -5,7 +5,7 @@ Tools for real-time audio re-synthesis.
 ## Required libs 
 
 - For Testing: [cunit](http://cunit.sourceforge.net/)
-- For Compliation: [portaudio](http://www.portaudio.com/docs.html)
+- For Compilation: [portaudio](http://www.portaudio.com/docs.html)
 
 For now the makefile expects that portaudio be compiled manually. The make file
 expects to find `./portaudio/`  `./audio-pass/` in the same directory.
