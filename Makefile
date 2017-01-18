@@ -25,13 +25,26 @@ PORTAUDIO_INC_DIR := $(PORTAUDIO_DIR)/include
 PORTAUDIO_LIB := ${PORTAUDIO_LIB_DIR}/libportaudio.a
 CUNIT_INC_DIR := /usr/local/include
 CUNIT_LIB_DIR := /usr/local/lib
-OSX_FRAMEWORKS := -framework CoreAudio -framework AudioToolbox -framework AudioUnit -framework CoreServices -framework Carbon
 
 O_DIR := .o
 I_DIR := include
 T_DIR := tests
 CC := gcc
 CFLAGS := -I$(I_DIR) -I$(PORTAUDIO_INC_DIR) -I$(CUNIT_INC_DIR)
+
+# We need to pass in differnet options when linking depending on
+# our platform. Here we support Linux and Darwin (OSX). When
+# linking a the portaudio.a binary, the contents of
+# STATIC_OPTIONS will be passed to gcc after the .o and .a files.
+UNAME := $(strip $(shell uname))
+OSX_FRAMEWORKS := -framework CoreAudio -framework AudioToolbox -framework AudioUnit -framework CoreServices -framework Carbon
+LINUX_STATIC_FLAGS := -lrt -lm -lasound -ljack -pthread
+ifeq ($(UNAME), Linux)
+STATIC_OPTIONS := $(LINUX_STATIC_FLAGS)
+endif
+ifeq ($(UNAME), Darwin)
+STATIC_OPTIONS := $(OSX_FRAMEWORKS)
+endif
 
 # We generate .o files for all c files in the root dir. Note
 # that we intentionally omit .c files in the tests dir
@@ -61,7 +74,7 @@ $(O_DIR)/%.o : $(T_DIR)/%.c $(H_FILES)
 # issues. This is an alternative to the traditional aproach of
 # using the -l and -L: $ gcc -lportaudio -L$(PORTAUDIO_LIB_DIR)
 bin/pass : $(O_FILES)
-	$(CC)  $(OSX_FRAMEWORKS) $(PORTAUDIO_LIB) $(O_FILES) -o $@
+	$(CC) $(O_FILES) $(PORTAUDIO_LIB) $(STATIC_OPTIONS) -o $@
 
 # This is a 'static pattern rule' so "$*" in the recipe matches
 # the the part of the filename that matched % in the target
@@ -71,7 +84,7 @@ bin/pass : $(O_FILES)
 # and a %.h file. Example usage:
 # $ make testCCRing
 bin/test% : $(O_DIR)/test%.o $(O_DIR)/%.o $(I_DIR)/%.h
-	$(CC) -o ./bin/test$* $< $(O_DIR)/$*.o $(CFLAGS) -lcunit -L$(CUNIT_LIB_DIR)
+	$(CC) -o ./bin/test$* $< $(O_DIR)/$*.o $(CFLAGS) -L$(CUNIT_LIB_DIR) -lcunit
 
 tests: $(patsubst %, bin/%, $(TESTS))
 
@@ -87,3 +100,5 @@ debug:
 	@echo TESTS: $(TESTS)
 	@echo O_FILES: $(O_FILES)
 	@echo TEST_O_FILES: $(TEST_O_FILES)
+	@echo UNAME: $(UNAME)
+	@echo STATIC_OPTIONS: $(STATIC_OPTIONS)
