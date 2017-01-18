@@ -2,7 +2,7 @@
 # example, our .o are created by a pattern rule, so we want to
 # specify that they are .SECONDARY. To do that we need to be
 # able to refer to then by exactly the same string in multiple
-# places (1) in the .SECONDARY statement, and (2) when listing
+# places: (1) in the .SECONDARY statement, and (2) when listing
 # them as a depedency. For that reason, we have to be careful
 # with path separators (./tests/t.o != tests/t.o)
 #
@@ -32,10 +32,10 @@ T_DIR := tests
 CC := gcc
 CFLAGS := -I$(I_DIR) -I$(PORTAUDIO_INC_DIR) -I$(CUNIT_INC_DIR)
 
-# We need to pass in differnet options when linking depending on
-# our platform. Here we support Linux and Darwin (OSX). When
+# We need to pass in differnet options when linking (depending
+# on our platform). Here we support Linux and Darwin (OSX). When
 # linking a the portaudio.a binary, the contents of
-# STATIC_OPTIONS will be passed to gcc after the .o and .a files.
+# STATIC_OPTIONS will be passed to gcc after the .o and .a filesa.
 UNAME := $(strip $(shell uname))
 OSX_FRAMEWORKS := -framework CoreAudio -framework AudioToolbox -framework AudioUnit -framework CoreServices -framework Carbon
 LINUX_STATIC_FLAGS := -lrt -lm -lasound -ljack -pthread
@@ -72,7 +72,7 @@ $(O_DIR)/%.o : $(T_DIR)/%.c $(H_FILES)
 # If both a static and a shared lib are available, gcc links the
 # shared lib. Pass in the .libportaudio.a directly to avoid
 # issues. This is an alternative to the traditional aproach of
-# using the -l and -L: $ gcc -lportaudio -L$(PORTAUDIO_LIB_DIR)
+# using the -l and -L: $ gcc -L$(PORTAUDIO_LIB_DIR) -lportaudio
 bin/pass : $(O_FILES)
 	$(CC) $(O_FILES) $(PORTAUDIO_LIB) $(STATIC_OPTIONS) -o $@
 
