@@ -16,7 +16,8 @@ void should_fail(void) {
   CU_ASSERT_EQUAL(1, 2);
 }
 
-int compare(int ar1[], int ar2[], int argc) {
+//use ccAudioDataType array arguments, unsigned long length
+int compare(ccAudioDataType ar1[], ccAudioDataType ar2[], unsigned long argc) {
   int i;
   for (i = 0; i < argc; i++) {
     if (ar1[i] != ar2[i]){
@@ -27,8 +28,8 @@ int compare(int ar1[], int ar2[], int argc) {
 }
 
 void compare_test(void) {
-  int a1[] = {1, 2};
-  int a2[] = {1, 2};
+  ccAudioDataType a1[] = {1.0, 2.0}; //ccAudioDataType is currently a float value
+  ccAudioDataType a2[] = {1.0, 2.0}; 
   CU_ASSERT_TRUE(compare(a1, a2, 2));
 }
 
