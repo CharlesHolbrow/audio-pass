@@ -15,6 +15,22 @@ void should_fail(void) {
   CU_ASSERT_EQUAL(1, 2);
 }
 
+int compare(int ar1[], int ar2[], int argc) {
+  int i;
+  for (i = 0; i < argc; i++) {
+    if (ar1[i] != ar2[i]){
+      return 0;
+    }
+  }
+  return 1;
+}
+
+void compare_test(void) {
+  int a1[] = {1, 2};
+  int a2[] = {1, 2};
+  CU_ASSERT_TRUE(compare(a1, a2, 2));
+}
+
 int main(int argc, char** argv) {
 
   if (CU_initialize_registry() != CUE_SUCCESS) {
@@ -28,6 +44,7 @@ int main(int argc, char** argv) {
 
   CU_pTest t1 = CU_add_test(ccr_suite, "Simple Test", simple_test);
   CU_pTest t2 = CU_add_test(ccr_suite, "Should Fail", should_fail);
+  CU_pTest t3 = CU_add_test(ccr_suite, "Compare Test", compare_test);
 
   if (ccr_suite == NULL) {
     // check the framework error code
