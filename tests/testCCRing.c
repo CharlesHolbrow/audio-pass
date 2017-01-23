@@ -3,6 +3,7 @@
 // tests
 #include <CUnit/CUnit.h>
 #include <CUnit/Console.h>
+#include <CUnit/Basic.h>
 // local imports
 #include "CCRing.h"
 
