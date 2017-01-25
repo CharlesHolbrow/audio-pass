@@ -8,14 +8,6 @@
 #include "CCRing.h"
 
 
-void simple_test(void) {
-  CU_ASSERT_EQUAL(1, 1.);
-}
-
-void should_fail(void) {
-  CU_ASSERT_EQUAL(1, 2);
-}
-
 //use ccAudioDataType array arguments, unsigned long length
 int compare(ccAudioDataType ar1[], ccAudioDataType ar2[], unsigned long argc) {
   int i;
@@ -33,6 +25,15 @@ void compare_test(void) {
   CU_ASSERT_TRUE(compare(a1, a2, 2));
 }
 
+void append_test(void) {
+  unsigned long length = 4;
+  CCRing* test_ring = createRing(length);
+  ccAudioDataType a1[] = {1.0, 2.0};
+  ringAppend(test_ring, a1, length);
+  ccAudioDataType expected[] = {1.0, 2.0, 0.0, 0.0};
+  CU_ASSERT_TRUE(compare(test_ring->data, expected, length));
+}
+
 int main(int argc, char** argv) {
 
   if (CU_initialize_registry() != CUE_SUCCESS) {
@@ -44,9 +45,8 @@ int main(int argc, char** argv) {
   // CU_InitializeFunc pInit, CU_CleanupFunc pClean
   CU_pSuite ccr_suite = CU_add_suite("CCRing Suite", NULL, NULL);
 
-  CU_pTest t1 = CU_add_test(ccr_suite, "Simple Test", simple_test);
-  CU_pTest t2 = CU_add_test(ccr_suite, "Should Fail", should_fail);
-  CU_pTest t3 = CU_add_test(ccr_suite, "Compare Test", compare_test);
+  CU_pTest t1 = CU_add_test(ccr_suite, "Compare Test", compare_test);
+  CU_pTest t2 = CU_add_test(ccr_suite, "Append Test", append_test);
 
   if (ccr_suite == NULL) {
     // check the framework error code

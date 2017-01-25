@@ -31,3 +31,9 @@ CCError freeRing(CCRing* pRing) {
   free(pRing);
   return ccNoError;
 }
+
+CCError ringAppend(CCRing* pRing, ccAudioDataType arr[], unsigned long length) {
+
+
+  return ccNoError;
+}
