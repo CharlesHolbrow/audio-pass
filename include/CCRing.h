@@ -11,14 +11,16 @@ typedef float ccAudioDataType;
 
 
 typedef struct CCRing {
-  float* data;
+  ccAudioDataType* data;
   unsigned long length;
+  unsigned long index;
 } CCRing;
 
 
 typedef enum CCError {
   ccNoError = 0,
-  ccError = -1000
+  ccError = -1000,
+  ccUndersizedRing
 } CCError;
 
 
@@ -27,6 +29,7 @@ On Success, return a CCRing pointer
 On Failure, return NULL */
 CCRing* createRing(unsigned long length);
 
+CCError ringAppend(CCRing* pRing, ccAudioDataType arr[], unsigned long length);
 
 /* Free a memory allocated by createRing
 On Success, return ccNoError
