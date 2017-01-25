@@ -20,11 +20,18 @@ CCRing* createRing(unsigned long length) {
     return NULL;
   }
 
+  // initialize length
+  ring->length = length;
+
+  // initialize index to last spot in data array
+  ring->index = length - 1;
+
   // initialize all data to zero
   memset(ring->data, 0, dataSize);
-  return ring;
-}
 
+  return ring;
+
+}
 
 CCError freeRing(CCRing* pRing) {
   free(pRing->data);
@@ -34,6 +41,12 @@ CCError freeRing(CCRing* pRing) {
 
 CCError ringAppend(CCRing* pRing, ccAudioDataType arr[], unsigned long length) {
 
-
+  for (unsigned long i = 0; i < length; i++) {
+    (pRing->index)++;
+    if ((pRing->index) >= (pRing->length)){
+      pRing->index = 0;
+    }
+    *(pRing->data + pRing->index) = *(arr + i);
+  }
   return ccNoError;
 }

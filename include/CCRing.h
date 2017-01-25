@@ -13,6 +13,7 @@ typedef float ccAudioDataType;
 typedef struct CCRing {
   ccAudioDataType* data;
   unsigned long length;
+  unsigned long index;
 } CCRing;
 
 

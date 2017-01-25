@@ -19,6 +19,14 @@ int compare(ccAudioDataType ar1[], ccAudioDataType ar2[], unsigned long argc) {
   return 1;
 }
 
+void print_array(ccAudioDataType ar1[], unsigned long length) {
+  printf("\n");
+  for (int i = 0; i < length; i++) {
+    printf("%f, ", ar1[i]);
+  }
+  printf("\n");
+}
+
 void compare_test(void) {
   ccAudioDataType a1[] = {1.0, 2.0}; //ccAudioDataType is currently a float value
   ccAudioDataType a2[] = {1.0, 2.0}; 
@@ -26,12 +34,17 @@ void compare_test(void) {
 }
 
 void append_test(void) {
-  unsigned long length = 4;
-  CCRing* test_ring = createRing(length);
+  CCRing* test_ring = createRing(4);
   ccAudioDataType a1[] = {1.0, 2.0};
-  ringAppend(test_ring, a1, length);
+  ringAppend(test_ring, a1, 2);
   ccAudioDataType expected[] = {1.0, 2.0, 0.0, 0.0};
-  CU_ASSERT_TRUE(compare(test_ring->data, expected, length));
+  CU_ASSERT_TRUE(compare(test_ring->data, expected, 4));
+
+  ccAudioDataType a2[] = {3.0, 4.0, 5.0};
+  ringAppend(test_ring, a2, 3);
+  ccAudioDataType expected2[] = {5.0, 2.0, 3.0, 4.0};
+  CU_ASSERT_TRUE(compare(test_ring->data, expected2, 4));
+
 }
 
 int main(int argc, char** argv) {
