@@ -36,9 +36,6 @@ CCError freeRing(CCRing* pRing) {
   return ccNoError;
 }
 
-/*comments to help me think
-given length inputed 
-length modulo length of ring <- which index of the ring you want to modify to be */
 
 int ccAppend(CCRing* appendRing, ccAudioDataType array[], unsigned long length) {
 
