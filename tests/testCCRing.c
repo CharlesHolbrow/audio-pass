@@ -13,7 +13,7 @@ void simple_test(void) {
 
 int compareArray(ccAudioDataType a[], ccAudioDataType b[], unsigned long length){
 
-  for (int i = 0; i < length; ++i) {
+  for (unsigned long i = 0; i < length; ++i) {
     if (a[i] != b[i])
       return 0;
   }

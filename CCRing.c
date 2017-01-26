@@ -42,10 +42,10 @@ length modulo length of ring <- which index of the ring you want to modify to be
 
 int ccAppend(CCRing* appendRing, ccAudioDataType array[], unsigned long length) {
 
-      int index = appendRing->index_ring;
+      unsigned long index = appendRing->index_ring;
 
-  for (int i = 0; i < length; ++i) {
-      int n = (index + i) % appendRing->length;
+  for (unsigned long i = 0; i < length; ++i) {
+      unsigned long n = (index + i) % appendRing->length;
       appendRing->data[n] = array[i];
 
       if (i==(length - 1) ){
