@@ -21,6 +21,9 @@ CCRing* createRing(unsigned long length) {
     return NULL;
   }
 
+  ring->length = length;
+  ring->index_ring = 0;
+
   // initialize all data to zero
   memset(ring->data, 0, dataSize);
   return ring;
@@ -38,7 +41,7 @@ given length inputed
 length modulo length of ring <- which index of the ring you want to modify to be */
 
 int ccAppend(CCRing* appendRing, ccAudioDataType array[], unsigned long length) {
-  
+
       int index = appendRing->index_ring;
 
   for (int i = 0; i < length; ++i) {
@@ -49,10 +52,6 @@ int ccAppend(CCRing* appendRing, ccAudioDataType array[], unsigned long length) 
         index = ((index + i + 1) % appendRing->length);
         appendRing->index_ring = index;
       }
-
-      
-    }
-
-
+   }
   return 1;
 }

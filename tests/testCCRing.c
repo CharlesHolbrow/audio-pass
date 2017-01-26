@@ -46,27 +46,20 @@ void initializeCCRing(void) {
 void testAppendRing(void) {
   //sees if ccApend function was called
   CCRing* appendRing = createRing(3);
-  appendRing->index_ring = 0;
-  appendRing->length = 3;
   ccAudioDataType a[6] = {50, 4, 3, 4, 6, 6};
   CU_ASSERT_TRUE(ccAppend(appendRing, a, 6));
 
-
   //test if Ring is changed as expected
   CCRing* appendRing2 = createRing(3);
-  appendRing2->index_ring = 0;
-  appendRing2->length = 3;
   ccAudioDataType b[6] = {50, 4, 3, 4, 6, 7};
   ccAppend(appendRing2, b, 6);
   ccAudioDataType expected[3] = {4, 6, 7};
   CU_ASSERT_TRUE(compareArray(appendRing2->data, expected, 3));
 
   CCRing* appendRing3 = createRing(4);
-  appendRing3->index_ring = 0;
-  appendRing3->length = 4;
   ccAudioDataType c[8] = {50, 4, 3, 4, 6, 7, 2, 3};
   ccAppend(appendRing3, c, 8);
-  ccAudioDataType expected2[3] = {4, 6, 7, 5};
+  ccAudioDataType expected2[4] = {4, 6, 7, 5};
   CU_ASSERT_FALSE(compareArray(appendRing3->data, expected2, 4));
 
   // test if same Ring being appended keeps pointer index
