@@ -7,10 +7,6 @@
 // local imports
 #include "CCRing.h"
 
-void simple_test(void) {
-  CU_ASSERT_EQUAL(1, 1.);
-}
-
 int compareArray(ccAudioDataType a[], ccAudioDataType b[], unsigned long length){
 
   for (unsigned long i = 0; i < length; ++i) {
@@ -90,10 +86,9 @@ int main(int argc, char** argv) {
   // CU_InitializeFunc pInit, CU_CleanupFunc pClean
   CU_pSuite ccr_suite = CU_add_suite("CCRing Suite", NULL, NULL);
 
-  CU_pTest t1 = CU_add_test(ccr_suite, "Simple Test", simple_test);
-  CU_pTest t2 = CU_add_test(ccr_suite, "Compare Arrays", testCompareArray);
-  CU_pTest t3 = CU_add_test(ccr_suite, "Initialization Test", initializeCCRing);
-  CU_pTest t4 = CU_add_test(ccr_suite, "Appended Array Test", testAppendRing);
+  CU_pTest t1 = CU_add_test(ccr_suite, "Compare Arrays", testCompareArray);
+  CU_pTest t2 = CU_add_test(ccr_suite, "Initialization Test", initializeCCRing);
+  CU_pTest t3 = CU_add_test(ccr_suite, "Appended Array Test", testAppendRing);
 
   if (ccr_suite == NULL) {
     // check the framework error code
