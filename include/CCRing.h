@@ -13,7 +13,9 @@ typedef float ccAudioDataType;
 typedef struct CCRing {
   ccAudioDataType* data;
   unsigned long length;
-  unsigned long index_ring;
+  unsigned long index_append;
+  unsigned long index_read;
+  unsigned long buffer;
 } CCRing;
 
 
@@ -42,6 +44,8 @@ CCError freeRing(CCRing* pRing);
 records a pointer where the last change was made to the Ring
 and appends at the position of the pointer with each new
 append. */
-int ccAppend(CCRing* appendRing, ccAudioDataType array[], unsigned long length);
+int ccAppend(CCRing* ring, ccAudioDataType array[], unsigned long length);
+
+ccAudioDataType ccRead(CCRing* ring, unsigned long length);
 
 #endif
