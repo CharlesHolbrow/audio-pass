@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h> // memset
 #include "CCRing.h"
+#include <stdio.h>
 
 
 CCRing* createRing(unsigned long length) {
@@ -30,7 +31,6 @@ CCRing* createRing(unsigned long length) {
   memset(ring->data, 0, dataSize);
 
   return ring;
-
 }
 
 CCError freeRing(CCRing* pRing) {

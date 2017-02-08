@@ -40,4 +40,10 @@ think that this should ever fail - its behavior will either be
 undefined, or it will succeed. */
 CCError freeRing(CCRing* pRing);
 
+/* ccAppend takes an array and adds it to the Ring. It also
+records a pointer where the last change was made to the Ring
+and appends at the position of the pointer with each new
+append. */
+int ccAppend(CCRing* appendRing, ccAudioDataType array[], unsigned long length);
+
 #endif
