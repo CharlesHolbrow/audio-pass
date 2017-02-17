@@ -13,9 +13,9 @@ int compareArray(ccAudioDataType a[], ccAudioDataType b[], unsigned long length)
     if (a[i] != b[i])
       return 0;
   }
-
   return 1;
 }
+
 
 void testCompareArray(void) {
 
@@ -29,6 +29,7 @@ void testCompareArray(void) {
   CU_ASSERT_FALSE(compareArray(a, b, 3));
 }
 
+
 void initializeCCRing(void) {
   CCRing* pRing = createRing(3);
   ccAudioDataType test[3] = {0, 0, 0};
@@ -38,6 +39,7 @@ void initializeCCRing(void) {
   test[2] = 3;
   CU_ASSERT_FALSE(compareArray(pRing->data, test, 3));
 }
+
 
 void testAppendRing(void) {
   //sees if ccApend function was called
@@ -72,8 +74,23 @@ void testAppendRing(void) {
   ccAppend(appendRing2, g, 1);
   ccAudioDataType expected4[3] = {80, 37, 47};
   CU_ASSERT_TRUE(compareArray(appendRing2->data, expected4, 3))
-
 }
+
+
+void testGenerateSin(void) {
+  CCRing* ring = createRing(4);
+  double cycles = 1.0;
+  ccGenerateSin(ring, cycles);
+  ccAudioDataType expected[4] = {0, 1, 0, -1};
+  CU_ASSERT_TRUE(compareArray(ring->data, expected, 4))
+
+  CCRing* ring2 = createRing(4);
+  double cycles2 = 3.0;
+  ccGenerateSin(ring2, cycles2);
+  ccAudioDataType expected2[4] = {0, -1, 0, 1};
+  CU_ASSERT_TRUE(compareArray(ring2->data, expected2, 4));
+}
+
 
 int main(int argc, char** argv) {
 
@@ -89,6 +106,7 @@ int main(int argc, char** argv) {
   CU_pTest t1 = CU_add_test(ccr_suite, "Compare Arrays", testCompareArray);
   CU_pTest t2 = CU_add_test(ccr_suite, "Initialization Test", initializeCCRing);
   CU_pTest t3 = CU_add_test(ccr_suite, "Appended Array Test", testAppendRing);
+  CU_pTest t4 = CU_add_test(ccr_suite, "Generate Sin Test", testGenerateSin);
 
   if (ccr_suite == NULL) {
     // check the framework error code
