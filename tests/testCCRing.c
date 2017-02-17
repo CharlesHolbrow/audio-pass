@@ -101,21 +101,22 @@ void testAppendRing(void) {
   ccAudioDataType expected4[3] = {80, 37, 47};
   CU_ASSERT_TRUE(compare(appendRing2->data, expected4, 3))
 }
-/*
+
+
 void testGenerateSin(void) {
   CCRing* ring = createRing(4);
   double cycles = 1.0;
   ccGenerateSin(ring, cycles);
   ccAudioDataType expected[4] = {0, 1, 0, -1};
-  CU_ASSERT_TRUE(compareArray(ring->data, expected, 4))
+  CU_ASSERT_TRUE(compare(ring->data, expected, 4))
 
   CCRing* ring2 = createRing(4);
   double cycles2 = 3.0;
   ccGenerateSin(ring2, cycles2);
   ccAudioDataType expected2[4] = {0, -1, 0, 1};
-  CU_ASSERT_TRUE(compareArray(ring2->data, expected2, 4));
+  CU_ASSERT_TRUE(compare(ring2->data, expected2, 4));
 }
-*/
+
 
 int main(int argc, char** argv) {
 
@@ -133,7 +134,7 @@ int main(int argc, char** argv) {
   CU_pTest t3 = CU_add_test(ccr_suite, "Appended Array Test", testAppendRing);
   CU_pTest t4 = CU_add_test(ccr_suite, "Compare Test", compare_test);
   CU_pTest t5 = CU_add_test(ccr_suite, "Append Test", append_test);
-  /*CU_pTest t6 = CU_add_test(ccr_suite, "Generate Sin Test", testGenerateSin);*/
+  CU_pTest t6 = CU_add_test(ccr_suite, "Generate Sin Test", testGenerateSin);
 
 
   if (ccr_suite == NULL) {

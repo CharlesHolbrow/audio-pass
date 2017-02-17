@@ -52,7 +52,7 @@ CCError ringAppend(CCRing* pRing, ccAudioDataType arr[], unsigned long length) {
   return ccNoError;
 }
 
-/*
+
 CCError ccGenerateSin(CCRing* sinusoid, double cycles) {
   unsigned long length = sinusoid->length;
   double distBetweenPoints = (2*PI)/length;
@@ -63,9 +63,9 @@ CCError ccGenerateSin(CCRing* sinusoid, double cycles) {
     dataPoints[i] = sin(cycles * n);
   }
 
-  ccAppend(sinusoid, dataPoints, length);
+  ringAppend(sinusoid, dataPoints, length);
 
-  ************************* PRINT STATEMENTS *************************
+  /************************* PRINT STATEMENTS *************************
   printf("%f\n\n", distBetweenPoints);
   for (unsigned long i = 0; i < length; i++) {
     printf("%f\n", dataPoints[i]);
@@ -75,9 +75,9 @@ CCError ccGenerateSin(CCRing* sinusoid, double cycles) {
     printf("%f\n", *(sinusoid->data + i));
   }
   printf("\n");
-  *******************************************************************
+  *******************************************************************/
 
   return ccNoError;
 }
-*/
+
 
