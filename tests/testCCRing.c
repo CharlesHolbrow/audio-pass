@@ -7,76 +7,101 @@
 // local imports
 #include "CCRing.h"
 
-int compareArray(ccAudioDataType a[], ccAudioDataType b[], unsigned long length){
-
-  for (unsigned long i = 0; i < length; ++i) {
-    if (a[i] != b[i])
+//use ccAudioDataType array arguments, unsigned long length
+int compare(ccAudioDataType ar1[], ccAudioDataType ar2[], unsigned long argc) {
+  int i;
+  for (i = 0; i < argc; i++) {
+    if (ar1[i] != ar2[i]){
       return 0;
+    }
   }
   return 1;
 }
 
 
-void testCompareArray(void) {
+void print_array(ccAudioDataType ar1[], unsigned long length) {
+  printf("\n");
+  for (int i = 0; i < length; i++) {
+    printf("%f, ", ar1[i]);
+  }
+  printf("\n");
+}
 
+
+void compare_test(void) {
+  ccAudioDataType a1[] = {1.0, 2.0}; //ccAudioDataType is currently a float value
+  ccAudioDataType a2[] = {1.0, 2.0}; 
+  CU_ASSERT_TRUE(compare(a1, a2, 2));
+}
+
+
+void append_test(void) {
+  CCRing* test_ring = createRing(4);
+  ccAudioDataType a1[] = {1.0, 2.0};
+  ringAppend(test_ring, a1, 2);
+  ccAudioDataType expected[] = {1.0, 2.0, 0.0, 0.0};
+  CU_ASSERT_TRUE(compare(test_ring->data, expected, 4));
+
+  ccAudioDataType a2[] = {3.0, 4.0, 5.0};
+  ringAppend(test_ring, a2, 3);
+  ccAudioDataType expected2[] = {5.0, 2.0, 3.0, 4.0};
+  CU_ASSERT_TRUE(compare(test_ring->data, expected2, 4));
+}
+
+
+void testcompare(void) {
   ccAudioDataType a2[3] = {1,2,3};
   ccAudioDataType b2[3] = {1,2,3};
 
   ccAudioDataType a[3] = {1,2,3};
   ccAudioDataType b[3] = {1,4,5};
 
-  CU_ASSERT_TRUE(compareArray(a2, b2, 3));
-  CU_ASSERT_FALSE(compareArray(a, b, 3));
+  CU_ASSERT_TRUE(compare(a2, b2, 3));
+  CU_ASSERT_FALSE(compare(a, b, 3));
 }
 
 
 void initializeCCRing(void) {
   CCRing* pRing = createRing(3);
   ccAudioDataType test[3] = {0, 0, 0};
-  CU_ASSERT_TRUE(compareArray(pRing->data, test, 3));
+  CU_ASSERT_TRUE(compare(pRing->data, test, 3));
 
   //change tests to be false
   test[2] = 3;
-  CU_ASSERT_FALSE(compareArray(pRing->data, test, 3));
+  CU_ASSERT_FALSE(compare(pRing->data, test, 3));
 }
 
 
 void testAppendRing(void) {
-  //sees if ccApend function was called
-  CCRing* appendRing = createRing(3);
-  ccAudioDataType a[6] = {50, 4, 3, 4, 6, 6};
-  CU_ASSERT_TRUE(ccAppend(appendRing, a, 6));
-
   //test if Ring is changed as expected
   CCRing* appendRing2 = createRing(3);
   ccAudioDataType b[6] = {50, 4, 3, 4, 6, 7};
-  ccAppend(appendRing2, b, 6);
+  ringAppend(appendRing2, b, 6);
   ccAudioDataType expected[3] = {4, 6, 7};
-  CU_ASSERT_TRUE(compareArray(appendRing2->data, expected, 3));
+  CU_ASSERT_TRUE(compare(appendRing2->data, expected, 3));
 
   CCRing* appendRing3 = createRing(4);
   ccAudioDataType c[8] = {50, 4, 3, 4, 6, 7, 2, 3};
-  ccAppend(appendRing3, c, 8);
+  ringAppend(appendRing3, c, 8);
   ccAudioDataType expected2[4] = {4, 6, 7, 5};
-  CU_ASSERT_FALSE(compareArray(appendRing3->data, expected2, 4));
+  CU_ASSERT_FALSE(compare(appendRing3->data, expected2, 4));
 
   // test if same Ring being appended keeps pointer index
   ccAudioDataType d[1] = {20};
   ccAudioDataType e[1] = {37};
-  ccAppend(appendRing2, d, 1);
-  ccAppend(appendRing2, e, 1);
+  ringAppend(appendRing2, d, 1);
+  ringAppend(appendRing2, e, 1);
   ccAudioDataType expected3[3] = {20, 37, 7};
-  CU_ASSERT_TRUE(compareArray(appendRing2->data, expected3, 3))
+  CU_ASSERT_TRUE(compare(appendRing2->data, expected3, 3))
 
   ccAudioDataType f[1] = {47};
   ccAudioDataType g[1] = {80};
-  ccAppend(appendRing2, f, 1);
-  ccAppend(appendRing2, g, 1);
+  ringAppend(appendRing2, f, 1);
+  ringAppend(appendRing2, g, 1);
   ccAudioDataType expected4[3] = {80, 37, 47};
-  CU_ASSERT_TRUE(compareArray(appendRing2->data, expected4, 3))
+  CU_ASSERT_TRUE(compare(appendRing2->data, expected4, 3))
 }
-
-
+/*
 void testGenerateSin(void) {
   CCRing* ring = createRing(4);
   double cycles = 1.0;
@@ -90,7 +115,7 @@ void testGenerateSin(void) {
   ccAudioDataType expected2[4] = {0, -1, 0, 1};
   CU_ASSERT_TRUE(compareArray(ring2->data, expected2, 4));
 }
-
+*/
 
 int main(int argc, char** argv) {
 
@@ -103,10 +128,13 @@ int main(int argc, char** argv) {
   // CU_InitializeFunc pInit, CU_CleanupFunc pClean
   CU_pSuite ccr_suite = CU_add_suite("CCRing Suite", NULL, NULL);
 
-  CU_pTest t1 = CU_add_test(ccr_suite, "Compare Arrays", testCompareArray);
+  CU_pTest t1 = CU_add_test(ccr_suite, "Compare Arrays", testcompare);
   CU_pTest t2 = CU_add_test(ccr_suite, "Initialization Test", initializeCCRing);
   CU_pTest t3 = CU_add_test(ccr_suite, "Appended Array Test", testAppendRing);
-  CU_pTest t4 = CU_add_test(ccr_suite, "Generate Sin Test", testGenerateSin);
+  CU_pTest t4 = CU_add_test(ccr_suite, "Compare Test", compare_test);
+  CU_pTest t5 = CU_add_test(ccr_suite, "Append Test", append_test);
+  /*CU_pTest t6 = CU_add_test(ccr_suite, "Generate Sin Test", testGenerateSin);*/
+
 
   if (ccr_suite == NULL) {
     // check the framework error code

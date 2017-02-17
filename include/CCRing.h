@@ -12,12 +12,13 @@ typedef float ccAudioDataType;
 typedef struct CCRing {
   ccAudioDataType* data;
   unsigned long length;
-  unsigned long index_ring;
+  unsigned long index;
 } CCRing;
 
 typedef enum CCError {
   ccNoError = 0,
-  ccError = -1000
+  ccError = -1000,
+  ccUndersizedRing
 } CCError;
 
 /* Create and initialize a CCRing struct.
@@ -38,7 +39,8 @@ CCError freeRing(CCRing* pRing);
 records a pointer where the last change was made to the Ring
 and appends at the position of the pointer with each new
 append. */
-int ccAppend(CCRing* appendRing, ccAudioDataType array[], unsigned long length);
+CCError ringAppend(CCRing* pRing, ccAudioDataType arr[], unsigned long length);
+/*int ccAppend(CCRing* appendRing, ccAudioDataType array[], unsigned long length);*/
 
 /* ccGenerateSin takes in a pointer to a CCRing, and the # of cycles
 for the resulting standard sinusoid (A = 1, phi = 0). It returns evenly 
