@@ -38,12 +38,12 @@ void compare_test(void) {
 void append_test(void) {
   CCRing* test_ring = createRing(4);
   ccAudioDataType a1[] = {1.0, 2.0};
-  ringAppend(test_ring, a1, 2);
+  ccAppend(test_ring, a1, 2);
   ccAudioDataType expected[] = {1.0, 2.0, 0.0, 0.0};
   CU_ASSERT_TRUE(compare(test_ring->data, expected, 4));
 
   ccAudioDataType a2[] = {3.0, 4.0, 5.0};
-  ringAppend(test_ring, a2, 3);
+  ccAppend(test_ring, a2, 3);
   ccAudioDataType expected2[] = {5.0, 2.0, 3.0, 4.0};
   CU_ASSERT_TRUE(compare(test_ring->data, expected2, 4));
 }
@@ -76,28 +76,28 @@ void testAppendRing(void) {
   //test if Ring is changed as expected
   CCRing* appendRing2 = createRing(3);
   ccAudioDataType b[6] = {50, 4, 3, 4, 6, 7};
-  ringAppend(appendRing2, b, 6);
+  ccAppend(appendRing2, b, 6);
   ccAudioDataType expected[3] = {4, 6, 7};
   CU_ASSERT_TRUE(compare(appendRing2->data, expected, 3));
 
   CCRing* appendRing3 = createRing(4);
   ccAudioDataType c[8] = {50, 4, 3, 4, 6, 7, 2, 3};
-  ringAppend(appendRing3, c, 8);
+  ccAppend(appendRing3, c, 8);
   ccAudioDataType expected2[4] = {4, 6, 7, 5};
   CU_ASSERT_FALSE(compare(appendRing3->data, expected2, 4));
 
   // test if same Ring being appended keeps pointer index
   ccAudioDataType d[1] = {20};
   ccAudioDataType e[1] = {37};
-  ringAppend(appendRing2, d, 1);
-  ringAppend(appendRing2, e, 1);
+  ccAppend(appendRing2, d, 1);
+  ccAppend(appendRing2, e, 1);
   ccAudioDataType expected3[3] = {20, 37, 7};
   CU_ASSERT_TRUE(compare(appendRing2->data, expected3, 3))
 
   ccAudioDataType f[1] = {47};
   ccAudioDataType g[1] = {80};
-  ringAppend(appendRing2, f, 1);
-  ringAppend(appendRing2, g, 1);
+  ccAppend(appendRing2, f, 1);
+  ccAppend(appendRing2, g, 1);
   ccAudioDataType expected4[3] = {80, 37, 47};
   CU_ASSERT_TRUE(compare(appendRing2->data, expected4, 3))
 }
