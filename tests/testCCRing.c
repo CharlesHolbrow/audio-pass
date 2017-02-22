@@ -73,10 +73,6 @@ void testAppendRing(void) {
   ccAudioDataType expected4[3] = {80, 37, 47};
   CU_ASSERT_TRUE(compareArray(appendRing2->data, expected4, 3))
 
-  //ccRead(appendRing2, 3);
-  printf("%f\n", ccRead(appendRing2, 3));
-  printf("%f\n", ccRead(appendRing2, 3));
-  printf("%s %lu", "buffer is!!!:", appendRing2->buffer);
 }
 
 int main(int argc, char** argv) {

@@ -13,9 +13,7 @@ typedef float ccAudioDataType;
 typedef struct CCRing {
   ccAudioDataType* data;
   unsigned long length;
-  unsigned long index_append;
-  unsigned long index_read;
-  unsigned long buffer;
+  unsigned long index_ring;
 } CCRing;
 
 
@@ -46,6 +44,6 @@ and appends at the position of the pointer with each new
 append. */
 int ccAppend(CCRing* ring, ccAudioDataType array[], unsigned long length);
 
-ccAudioDataType ccRead(CCRing* ring, unsigned long length);
+unsigned long ccValidLen(CCRing* ring, unsigned long tap)
 
 #endif
