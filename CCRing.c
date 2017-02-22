@@ -1,8 +1,9 @@
 #include <stdlib.h>
 #include <string.h> // memset
-#include "CCRing.h"
 #include <stdio.h>
-
+#include <math.h>
+#include "CCRing.h"
+#define PI 3.14159265
 
 CCRing* createRing(unsigned long length) {
 
@@ -21,14 +22,17 @@ CCRing* createRing(unsigned long length) {
     return NULL;
   }
 
+  // initialize length
   ring->length = length;
-  ring->index_ring = 0;
+
+  // initialize index to last spot in data array
+  ring->index = length - 1;
 
   // initialize all data to zero
   memset(ring->data, 0, dataSize);
+
   return ring;
 }
-
 
 CCError freeRing(CCRing* pRing) {
   free(pRing->data);
@@ -36,19 +40,34 @@ CCError freeRing(CCRing* pRing) {
   return ccNoError;
 }
 
-
-int ccAppend(CCRing* appendRing, ccAudioDataType array[], unsigned long length) {
-
-      unsigned long index = appendRing->index_ring;
-
-  for (unsigned long i = 0; i < length; ++i) {
-      unsigned long n = (index + i) % appendRing->length;
-      appendRing->data[n] = array[i];
-
-      if (i==(length - 1) ){
-        index = ((index + i + 1) % appendRing->length);
-        appendRing->index_ring = index;
-      }
-   }
-  return 1;
+CCError ccAppend(CCRing* pRing, ccAudioDataType arr[], unsigned long length) {
+  for (unsigned long i = 0; i < length; i++) {
+    (pRing->index)++;
+    if ((pRing->index) >= (pRing->length)){
+      pRing->index = 0;
+    }
+    *(pRing->data + pRing->index) = *(arr + i);
+  }
+  return ccNoError;
 }
+
+/*unsigned long ccValidLen(CCRing* ring, unsigned long tap) {
+  // Last position appended
+  unsigned long append_index = ring->index_ring;
+}*/
+
+CCError ccGenerateSin(CCRing* sinusoid, double cycles) {
+  unsigned long length = sinusoid->length;
+  double distBetweenPoints = (2*PI)/length;
+
+  ccAudioDataType dataPoints[length];
+  for (unsigned long i = 0; i < length; ++i) {
+    double n = i * distBetweenPoints;
+    dataPoints[i] = sin(cycles * n);
+  }
+
+  ccAppend(sinusoid, dataPoints, length);
+
+  return ccNoError;
+}
+
