@@ -1,7 +1,10 @@
 #include <stdlib.h>
 #include <string.h> // memset
+#include <stdio.h>
+#include <math.h>
 #include "CCRing.h"
 
+#define PI 3.14159265
 
 CCRing* createRing(unsigned long length) {
 
@@ -30,7 +33,6 @@ CCRing* createRing(unsigned long length) {
   memset(ring->data, 0, dataSize);
 
   return ring;
-
 }
 
 CCError freeRing(CCRing* pRing) {
@@ -39,8 +41,7 @@ CCError freeRing(CCRing* pRing) {
   return ccNoError;
 }
 
-CCError ringAppend(CCRing* pRing, ccAudioDataType arr[], unsigned long length) {
-
+CCError ccAppend(CCRing* pRing, ccAudioDataType arr[], unsigned long length) {
   for (unsigned long i = 0; i < length; i++) {
     (pRing->index)++;
     if ((pRing->index) >= (pRing->length)){
@@ -50,3 +51,36 @@ CCError ringAppend(CCRing* pRing, ccAudioDataType arr[], unsigned long length) {
   }
   return ccNoError;
 }
+
+
+CCError ccGenerateSin(CCRing* sinusoid, double cycles) {
+  unsigned long length = sinusoid->length;
+  double distBetweenPoints = (2*PI)/length;
+
+  ccAudioDataType dataPoints[length];
+  for (unsigned long i = 0; i < length; ++i) {
+    double n = i * distBetweenPoints;
+    dataPoints[i] = sin(cycles * n);
+  }
+
+  ccAppend(sinusoid, dataPoints, length);
+
+  /************************* PRINT STATEMENTS *************************
+  printf("%f\n\n", distBetweenPoints);
+  for (unsigned long i = 0; i < length; i++) {
+    printf("%f\n", dataPoints[i]);
+  }
+  printf("\n");
+  for (unsigned long i = 0; i < length; i++) {
+    printf("%f\n", *(sinusoid->data + i));
+  }
+  printf("\n");
+ ?hgf
+ ;lkjhg'
+ ';lkjl;lklkllljlkjhgfdsasdfghjkl;'
+ *******************************************************************/
+
+  return ccNoError;
+}
+
+
