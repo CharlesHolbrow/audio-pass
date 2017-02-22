@@ -22,9 +22,7 @@ CCRing* createRing(unsigned long length) {
   }
 
   ring->length = length;
-  ring->index_append = 0;
-  ring->index_read = 0;
-  ring->buffer = 0;
+  ring->index_ring = length;
 
   // initialize all data to zero
   memset(ring->data, 0, dataSize);
@@ -41,42 +39,23 @@ CCError freeRing(CCRing* pRing) {
 
 int ccAppend(CCRing* ring, ccAudioDataType array[], unsigned long length) {
 
-  unsigned long index_append = ring->index_append;
+   unsigned long index = ring->index_ring - ring->length;
 
-  for (unsigned long i = 0; i < length; ++i) {
-    unsigned long n = (index_append + i) % ring->length;
-    ring->data[n] = array[i];
+   for (unsigned long i = 0; i < length; ++i) {
+      unsigned long n = (index + i) % ring->length;
+      ring->data[n] = array[i];
 
-    if (i==(length - 1) ){
-    index_append = ((index_append + i + 1) % ring->length);
-    ring->index_append = index_append;
-    }
-  }
-
+      if (i==(length - 1) ){
+        index = ((index + i + 1) % ring->length);
+        ring->index_ring = index + ring->length;
+      }
+   }
   return 1;
 }
 
-ccAudioDataType ccRead(CCRing* ring, unsigned long length){
+unsigned long ccValidLen(CCRing* ring, unsigned long tap) {
+  // Last position appended
+  unsigned long append_index = ring->index_ring;
+  
 
-  unsigned long index_read = ring->index_read;
-  unsigned long index_append = ring->index_append;
-  ++ring->index_read;
-
-  if (index_append > index_read) {
-    ring->buffer = index_append - index_read;
-    printf("%s %lu\n", "index read is:", index_read);
-    printf("%s %lu\n", "index append is:", index_append);
-    printf("<(\")\n");
-    printf("%s %lu\n", "buffer is!!!:", ring->buffer);
-  }
-  else{
-    ring->buffer = length - index_read + index_append;
-    printf("%s %lu\n", "index read is:", index_read);
-    printf("%s %lu\n", "index append is:", index_append);
-    printf("%s %lu\n", "length is:", length);
-    printf("%s %lu\n", "buffer is!!!:", ring->buffer);
-    printf("\nread is:");
-  }
-
-  return ring->data[index_read];
 }
