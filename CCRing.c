@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <math.h>
 #include "CCRing.h"
-
 #define PI 3.14159265
 
 CCRing* createRing(unsigned long length) {
@@ -52,35 +51,16 @@ CCError ccAppend(CCRing* pRing, ccAudioDataType arr[], unsigned long length) {
   return ccNoError;
 }
 
+/*unsigned long ccValidLen(CCRing* ring, unsigned long tap) {
+  // Last position appended
+  unsigned long append_index = ring->index_ring;
+}*/
 
 CCError ccGenerateSin(CCRing* sinusoid, double cycles) {
-  unsigned long length = sinusoid->length;
-  double distBetweenPoints = (2*PI)/length;
-
-  ccAudioDataType dataPoints[length];
-  for (unsigned long i = 0; i < length; ++i) {
+  double distBetweenPoints = (2*PI)/sinusoid->length;
+  for (unsigned long i = 0; i < sinusoid->length; ++i) {
     double n = i * distBetweenPoints;
-    dataPoints[i] = sin(cycles * n);
+    *(sinusoid->data + i) = sin(cycles * n);
   }
-
-  ccAppend(sinusoid, dataPoints, length);
-
-  /************************* PRINT STATEMENTS *************************
-  printf("%f\n\n", distBetweenPoints);
-  for (unsigned long i = 0; i < length; i++) {
-    printf("%f\n", dataPoints[i]);
-  }
-  printf("\n");
-  for (unsigned long i = 0; i < length; i++) {
-    printf("%f\n", *(sinusoid->data + i));
-  }
-  printf("\n");
- ?hgf
- ;lkjhg'
- ';lkjl;lklkllljlkjhgfdsasdfghjkl;'
- *******************************************************************/
-
   return ccNoError;
 }
-
-
