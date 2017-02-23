@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <math.h>
 #include "CCRing.h"
-
 #define PI 3.14159265
 
 CCRing* createRing(unsigned long length) {
@@ -52,6 +51,10 @@ CCError ccAppend(CCRing* pRing, ccAudioDataType arr[], unsigned long length) {
   return ccNoError;
 }
 
+/*unsigned long ccValidLen(CCRing* ring, unsigned long tap) {
+  // Last position appended
+  unsigned long append_index = ring->index_ring;
+}*/
 
 CCError ccGenerateSin(CCRing* sinusoid, double cycles) {
   double distBetweenPoints = (2*PI)/sinusoid->length;

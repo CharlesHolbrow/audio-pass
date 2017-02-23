@@ -46,4 +46,6 @@ for the resulting standard sinusoid (A = 1, phi = 0). It returns evenly
 spaced sin data points for each index in the Ring. */
 CCError ccGenerateSin(CCRing* ring, double cycles);
 
+/*unsigned long ccValidLen(CCRing* ring, unsigned long tap)*/
+
 #endif
