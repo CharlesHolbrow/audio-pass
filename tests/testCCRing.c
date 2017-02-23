@@ -20,11 +20,11 @@ int compare(ccAudioDataType ar1[], ccAudioDataType ar2[], unsigned long argc) {
 
 int compare_float_array(ccAudioDataType ar1[], ccAudioDataType ar2[], unsigned long argc) {
   for (int i = 0; i < argc; i++) {
-    if (fabsf(ar1[i] - ar2[i]) < 1.0E-7) {
-      return 1;
+    if (fabsf(ar1[i] - ar2[i]) >= 1.0E-7) {
+      return 0;
     }
   }
-  return 0;
+  return 1;
 }
 
 
@@ -129,12 +129,12 @@ void testGenerateSin(void) {
 
 void testCompareFloatArray(void) {
   ccAudioDataType ar1[3] = {1.00000001, 2.00000001, 3.00000003}; //return True
-  ccAudioDataType ar2[3] = {1.00000000, 2.00000002, 3.00000002};
+  ccAudioDataType ar2[3] = {1.00000000, 2.00000000, 3.00000002};
   CU_ASSERT_TRUE(compare_float_array(ar1, ar2, 3))
 
-  ccAudioDataType ar3[3] = {1.0000001, 2.0000002, 3.0000003}; //return False
-  ccAudioDataType ar4[3] = {1.0000000, 2.0000001, 3.0000002};
-  CU_ASSERT_TRUE(compare_float_array(ar3, ar4, 3))
+  ccAudioDataType ar3[3] = {1.000001, 2.000002, 3.000003}; //return False
+  ccAudioDataType ar4[3] = {1.000000, 2.000001, 3.000002};
+  CU_ASSERT_FALSE(compare_float_array(ar3, ar4, 3))
 }
 
 
