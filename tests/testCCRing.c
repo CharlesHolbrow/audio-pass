@@ -9,13 +9,22 @@
 
 //use ccAudioDataType array arguments, unsigned long length
 int compare(ccAudioDataType ar1[], ccAudioDataType ar2[], unsigned long argc) {
-  int i;
-  for (i = 0; i < argc; i++) {
-    if (ar1[i] != ar2[i]){
+  for (int i = 0; i < argc; i++) {
+    if (ar1[i] != ar2[i]) {
       return 0;
     }
   }
   return 1;
+}
+
+
+int compare_float_array(ccAudioDataType ar1[], ccAudioDataType ar2[], unsigned long argc) {
+  for (int i = 0; i < argc; i++) {
+    if (fabsf(ar1[i] - ar2[i]) < 1.0E-7) {
+      return 1;
+    }
+  }
+  return 0;
 }
 
 
@@ -29,7 +38,7 @@ void print_array(ccAudioDataType ar1[], unsigned long length) {
 
 
 void compare_test(void) {
-  ccAudioDataType a1[] = {1.0, 2.0}; //ccAudioDataType is currently a float value
+  ccAudioDataType a1[] = {1.0, 2.0}; 
   ccAudioDataType a2[] = {1.0, 2.0}; 
   CU_ASSERT_TRUE(compare(a1, a2, 2));
 }
@@ -108,13 +117,24 @@ void testGenerateSin(void) {
   double cycles = 1.0;
   ccGenerateSin(ring, cycles);
   ccAudioDataType expected[4] = {0, 1, 0, -1};
-  CU_ASSERT_TRUE(compare(ring->data, expected, 4))
+  CU_ASSERT_TRUE(compare_float_array(ring->data, expected, 4))
 
   CCRing* ring2 = createRing(4);
   double cycles2 = 3.0;
   ccGenerateSin(ring2, cycles2);
   ccAudioDataType expected2[4] = {0, -1, 0, 1};
-  CU_ASSERT_TRUE(compare(ring2->data, expected2, 4));
+  CU_ASSERT_TRUE(compare_float_array(ring2->data, expected2, 4));
+}
+
+
+void testCompareFloatArray(void) {
+  ccAudioDataType ar1[3] = {1.00000001, 2.00000001, 3.00000003}; //return True
+  ccAudioDataType ar2[3] = {1.00000000, 2.00000002, 3.00000002};
+  CU_ASSERT_TRUE(compare_float_array(ar1, ar2, 3))
+
+  ccAudioDataType ar3[3] = {1.0000001, 2.0000002, 3.0000003}; //return False
+  ccAudioDataType ar4[3] = {1.0000000, 2.0000001, 3.0000002};
+  CU_ASSERT_TRUE(compare_float_array(ar3, ar4, 3))
 }
 
 
@@ -129,13 +149,13 @@ int main(int argc, char** argv) {
   // CU_InitializeFunc pInit, CU_CleanupFunc pClean
   CU_pSuite ccr_suite = CU_add_suite("CCRing Suite", NULL, NULL);
 
-  CU_pTest t1 = CU_add_test(ccr_suite, "Compare Arrays", testcompare);
+  CU_pTest t1 = CU_add_test(ccr_suite, "Compare Array Test", testcompare);
   CU_pTest t2 = CU_add_test(ccr_suite, "Initialization Test", initializeCCRing);
   CU_pTest t3 = CU_add_test(ccr_suite, "Appended Array Test", testAppendRing);
   CU_pTest t4 = CU_add_test(ccr_suite, "Compare Test", compare_test);
   CU_pTest t5 = CU_add_test(ccr_suite, "Append Test", append_test);
   CU_pTest t6 = CU_add_test(ccr_suite, "Generate Sin Test", testGenerateSin);
-
+  CU_pTest t7 = CU_add_test(ccr_suite, "Float Array Test", testCompareFloatArray);;
 
   if (ccr_suite == NULL) {
     // check the framework error code
