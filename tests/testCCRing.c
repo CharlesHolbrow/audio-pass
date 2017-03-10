@@ -138,6 +138,27 @@ void testCompareFloatArray(void) {
 }
 
 
+void testMultiply(void) {
+  CCRing* source = createRing(3);
+  CCRing* target = createRing(3);
+  ccAudioDataType ar1[3] = {1, 2, 3};
+  ccAudioDataType ar2[3] = {2, 3, 4};
+  ccAppend(source, ar1, 3);
+  ccAppend(target, ar2, 3);
+  ccAudioDataType expected[3] = {2, 6, 12};
+  ccMultiply(target, source);
+  CU_ASSERT_TRUE(compare(target->data, expected, 3)); //multiply two rings of the same size
+
+  CCRing* source1 = createRing(3);
+  CCRing* target1 = createRing(4);
+  ccAudioDataType ar3[3] = {1, 2, 3};
+  ccAudioDataType ar4[4] = {1, 2, 3, 4};
+  ccAppend(source1, ar3, 3);
+  ccAppend(target1, ar4, 4);  
+  CU_ASSERT_EQUAL(ccMultiply(target1, source), ccBufferSizeMismatch); //multiply two rings of different sizes
+}
+
+
 int main(int argc, char** argv) {
 
   if (CU_initialize_registry() != CUE_SUCCESS) {
@@ -155,7 +176,8 @@ int main(int argc, char** argv) {
   CU_pTest t4 = CU_add_test(ccr_suite, "Compare Test", compare_test);
   CU_pTest t5 = CU_add_test(ccr_suite, "Append Test", append_test);
   CU_pTest t6 = CU_add_test(ccr_suite, "Generate Sin Test", testGenerateSin);
-  CU_pTest t7 = CU_add_test(ccr_suite, "Float Array Test", testCompareFloatArray);;
+  CU_pTest t7 = CU_add_test(ccr_suite, "Float Array Test", testCompareFloatArray);
+  CU_pTest t8 = CU_add_test(ccr_suite, "Ring Multiplication Test", testMultiply);
 
   if (ccr_suite == NULL) {
     // check the framework error code

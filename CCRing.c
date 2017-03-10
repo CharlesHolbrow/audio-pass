@@ -64,3 +64,13 @@ CCError ccGenerateSin(CCRing* sinusoid, double cycles) {
   }
   return ccNoError;
 }
+
+CCError ccMultiply(CCRing* target, CCRing* source) {
+  if (target->length != source->length) {
+    return ccBufferSizeMismatch;
+  }
+  for (unsigned long i = 0; i < target->length; i++) {
+    *(target->data + i) = *(target->data + i) * *(source->data + i);
+  }
+  return ccNoError;
+}
