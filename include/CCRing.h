@@ -29,7 +29,6 @@ CCRing* createRing(unsigned long length);
 
 /* Free a memory allocated by createRing
 On Success, return ccNoError
-
 Note: Calling free on NULL has no effect. The behavior of
 calling free on an unfreeable pointer is undefined. I do not
 think that this should ever fail - its behavior will either be
@@ -47,12 +46,20 @@ for the resulting standard sinusoid (A = 1, phi = 0). It returns evenly
 spaced sin data points for each index in the Ring. */
 CCError ccGenerateSin(CCRing* ring, double cycles);
 
-/*unsigned long ccValidLen(CCRing* ring, unsigned long tap)*/
-
 /* ccMultiply takes in pointers to two CCRing structures - target and source.
 It modifies target->data by multiplying each element in target by the corresponding
 element in source. If the two rings are not the same length, it returns a ccBufferSizeMismath
 error of type CCError. */
 CCError ccMultiply(CCRing* target, CCRing* source);
 
+/* ccValidLen calculates the length of what can be read from a ring from a tap to
+the last index where something had been written*/
+CCError ccValidLen(CCRing* ring, unsigned long tap);
+
+/* getSamples appends the validlength from a tap to the index where something had last been
+written to a target ring*/
+CCError getSamples(CCRing* source, CCRing* target, unsigned long targetLen, unsigned long tap);
+
+/* plots the data array from a ccRing */
+CCError plot(CCRing* ring);
 #endif
