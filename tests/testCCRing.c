@@ -156,8 +156,53 @@ void testMultiply(void) {
   ccAppend(source1, ar3, 3);
   ccAppend(target1, ar4, 4);  
   CU_ASSERT_EQUAL(ccMultiply(target1, source), ccBufferSizeMismatch); //multiply two rings of different sizes
+
 }
 
+void testValidLen(void) {
+  CCRing* ring = createRing(3);
+  ccAudioDataType b[5] = {50, 4, 3, 4, 6};
+  ccAppend(ring, b, 5);
+  CU_ASSERT_TRUE(ccValidLen(ring, 1) == 1);
+  CU_ASSERT_TRUE(ccValidLen(ring, 0) == 2);
+  CU_ASSERT_TRUE(ccValidLen(ring, 3) == 2);
+  CU_ASSERT_FALSE(ccValidLen(ring, 1341234123) == 3);
+}
+
+void testGetSamples(void) {
+  //testing when ring->index > tap
+  CCRing* source = createRing(5);
+  ccAudioDataType a[5] = {50, 4, 3, 4, 6};
+  ccAppend(source, a, 5);
+  CCRing* target = createRing(4);
+  getSamples(source, target, target->length, 1);
+  ccAudioDataType expected[4] = {4, 3, 4, 6};
+  CU_ASSERT_TRUE(compare(target->data, expected, 4));
+
+  //testing when ring->index == tap
+  CCRing* target2 = createRing(1);
+  getSamples(source, target2, target2->length, 4);
+  ccAudioDataType expected2[1] = {6};
+  CU_ASSERT_TRUE(compare(target2->data, expected2, 1));
+
+  //testing when tap > ring->index
+  ccAudioDataType b[3] = {3,4,5};
+  ccAppend(source, b, 3);
+  ccAudioDataType appendexpect[5] = {3, 4, 5, 4, 6};
+  CU_ASSERT_TRUE(compare(source->data, appendexpect, 5));
+  CU_ASSERT_TRUE(source->index == 2);
+  CCRing* target3 = createRing(5);
+  getSamples(source, target3, target3->length, 3);
+  ccAudioDataType expectedTarget[5] = {4, 6, 3, 4, 5};
+  CU_ASSERT_TRUE(compare(target3->data, expectedTarget, 5))
+}
+
+void testPlot(void) {
+  CCRing* ring = createRing(5);
+  ccAudioDataType a[5] = {50, 4, 3, 4, 6};
+  ccAppend(ring, a, 5);
+  plot(ring);
+}
 
 int main(int argc, char** argv) {
 
@@ -178,6 +223,9 @@ int main(int argc, char** argv) {
   CU_pTest t6 = CU_add_test(ccr_suite, "Generate Sin Test", testGenerateSin);
   CU_pTest t7 = CU_add_test(ccr_suite, "Float Array Test", testCompareFloatArray);
   CU_pTest t8 = CU_add_test(ccr_suite, "Ring Multiplication Test", testMultiply);
+  CU_pTest t9 = CU_add_test(ccr_suite, "Test Valid Length", testValidLen);
+  CU_pTest t10 = CU_add_test(ccr_suite, "Test getSamples", testGetSamples);
+  CU_pTest t11 = CU_add_test(ccr_suite, "Test Plot", testPlot);
 
   if (ccr_suite == NULL) {
     // check the framework error code
