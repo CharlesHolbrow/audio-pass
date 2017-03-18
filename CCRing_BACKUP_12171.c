@@ -54,6 +54,7 @@ CCError ccAppend(CCRing* pRing, ccAudioDataType arr[], unsigned long length) {
 CCError ccValidLen(CCRing* ring, unsigned long tap) {
   if (tap > ring->length) return ccError;
 
+<<<<<<< HEAD
   if (tap < ring->index){
     return ring->index - tap + 1;
   }
@@ -107,6 +108,14 @@ CCError ccGenerateSin(CCRing* sinusoid, double cycles) {
     double n = i * distBetweenPoints;
     *(sinusoid->data + i) = sin(cycles * n);
   }
+=======
+CCError ccGenerateSin(CCRing* sinusoid, double cycles) {
+  double distBetweenPoints = (2*PI)/sinusoid->length;
+  for (unsigned long i = 0; i < sinusoid->length; ++i) {
+    double n = i * distBetweenPoints;
+    *(sinusoid->data + i) = sin(cycles * n);
+  }
+>>>>>>> 27267363f26c3df169d5725e4cfd36abbbb58076
   return ccNoError;
 }
 
@@ -118,4 +127,8 @@ CCError ccMultiply(CCRing* target, CCRing* source) {
     *(target->data + i) = *(target->data + i) * *(source->data + i);
   }
   return ccNoError;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 27267363f26c3df169d5725e4cfd36abbbb58076

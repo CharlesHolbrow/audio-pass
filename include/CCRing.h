@@ -46,8 +46,6 @@ for the resulting standard sinusoid (A = 1, phi = 0). It returns evenly
 spaced sin data points for each index in the Ring. */
 CCError ccGenerateSin(CCRing* ring, double cycles);
 
-/*unsigned long ccValidLen(CCRing* ring, unsigned long tap)*/
-
 /* ccMultiply takes in pointers to two CCRing structures - target and source.
 It modifies target->data by multiplying each element in target by the corresponding
 element in source. If the two rings are not the same length, it returns a ccBufferSizeMismath

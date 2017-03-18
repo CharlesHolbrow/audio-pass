@@ -156,6 +156,7 @@ void testMultiply(void) {
   ccAppend(source1, ar3, 3);
   ccAppend(target1, ar4, 4);  
   CU_ASSERT_EQUAL(ccMultiply(target1, source), ccBufferSizeMismatch); //multiply two rings of different sizes
+
 }
 
 void testValidLen(void) {
