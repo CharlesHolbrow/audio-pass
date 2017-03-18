@@ -119,3 +119,14 @@ CCError ccMultiply(CCRing* target, CCRing* source) {
   }
   return ccNoError;
 }
+
+CCError plot(CCRing* ring){
+  FILE *gnuplot = popen("gnuplot -persis", "w");
+  fprintf(gnuplot, "plot '-' with points pointtype 7\n");
+  for (unsigned long i = 0; i < ring->length; i++){
+    fprintf(gnuplot, "%lu %g\n", i, ring->data[i]);
+    //fprintf(gnuplot, "e\n");
+  }
+  fflush(gnuplot);
+  return ccNoError;
+}

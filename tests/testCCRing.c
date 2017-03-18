@@ -197,6 +197,12 @@ void testGetSamples(void) {
   CU_ASSERT_TRUE(compare(target3->data, expectedTarget, 5))
 }
 
+void testPlot(void) {
+  CCRing* ring = createRing(5);
+  ccAudioDataType a[5] = {50, 4, 3, 4, 6};
+  ccAppend(ring, a, 5);
+  plot(ring);
+}
 
 int main(int argc, char** argv) {
 
@@ -219,6 +225,7 @@ int main(int argc, char** argv) {
   CU_pTest t8 = CU_add_test(ccr_suite, "Ring Multiplication Test", testMultiply);
   CU_pTest t9 = CU_add_test(ccr_suite, "Test Valid Length", testValidLen);
   CU_pTest t10 = CU_add_test(ccr_suite, "Test getSamples", testGetSamples);
+  CU_pTest t11 = CU_add_test(ccr_suite, "Test Plot", testPlot);
 
   if (ccr_suite == NULL) {
     // check the framework error code

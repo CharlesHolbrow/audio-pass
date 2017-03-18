@@ -60,4 +60,6 @@ CCError ccValidLen(CCRing* ring, unsigned long tap);
 written to a target ring*/
 CCError getSamples(CCRing* source, CCRing* target, unsigned long targetLen, unsigned long tap);
 
+/* plots the data array from a ccRing */
+CCError plot(CCRing* ring);
 #endif
