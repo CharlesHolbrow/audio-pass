@@ -1,0 +1,24 @@
+
+
+#create executable in bin
+all: bin/kiss_fft_test
+
+#link .o
+bin/kiss_fft_test: kiss_fft_test.o kiss_fft.o kiss_fftr.o
+	gcc kiss_fft_test.o kiss_fft.o kiss_fftr.o -o $@ 
+
+#kiss_fft.c -> _kiss_fft_guts.h
+kiss_fft.o: ../kissfft/kiss_fft.c 
+	gcc -c ../kissfft/kiss_fft.c -I ../kissfft/tools -I ../kissfft/ -o $@
+
+#kiss_fftr.c -> _kiss_fft_guts.h kiss_fftr.h
+kiss_fftr.o: ../kissfft/tools/kiss_fftr.c 
+	gcc -c ../kissfft/tools/kiss_fftr.c -I ../kissfft/tools -I ../kissfft/ -o $@
+
+#kiss_fft_test.c -> kiss_fftr.h _kiss_fft_guts.h
+kiss_fft_test.o: tests/kiss_fft_test.c 
+	gcc -c tests/kiss_fft_test.c -I ../kissfft/tools -I ../kissfft/ -o $@
+
+clean:  
+	rm -f bin/kiss_fft_test kiss_fftr.o kiss_fft.o kiss_fft_test.o 
+	rm -R -f bin/kiss_fft_test.dSYM
