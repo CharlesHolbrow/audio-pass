@@ -197,6 +197,17 @@ void testGetSamples(void) {
   CU_ASSERT_TRUE(compare(target3->data, expectedTarget, 5))
 }
 
+void testHannWindow(void) {
+  //odd number of samples
+  CCRing* ring1 = createRing(5);
+  ccAudioDataType hann1[5] = {0, 0.5, 1, 0.5, 0};
+  ccHannWindow(ring1);
+  CU_ASSERT_TRUE(compare(ring1->data, hann1, 5))
+
+  //plot
+  plot(ring1);
+}
+
 void testPlot(void) {
   CCRing* ring = createRing(5);
   ccAudioDataType a[5] = {50, 4, 3, 4, 6};
@@ -226,6 +237,7 @@ int main(int argc, char** argv) {
   CU_pTest t9 = CU_add_test(ccr_suite, "Test Valid Length", testValidLen);
   CU_pTest t10 = CU_add_test(ccr_suite, "Test getSamples", testGetSamples);
   CU_pTest t11 = CU_add_test(ccr_suite, "Test Plot", testPlot);
+  CU_pTest t12 = CU_add_test(ccr_suite, "Test Hann Window", testHannWindow);
 
   if (ccr_suite == NULL) {
     // check the framework error code

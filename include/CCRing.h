@@ -62,4 +62,7 @@ CCError getSamples(CCRing* source, CCRing* target, unsigned long targetLen, unsi
 
 /* plots the data array from a ccRing */
 CCError plot(CCRing* ring);
+
+/* ccHannWindow generates a Hann Window function and stores it in a CCRing */
+CCError ccHannWindow(CCRing* ring);
 #endif
