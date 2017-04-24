@@ -1,8 +1,9 @@
 #include <stdlib.h>
 #include <string.h> // memset
-#include "CCRing.h"
 #include <stdio.h>
-
+#include <math.h>
+#include "CCRing.h"
+#define PI 3.14159265
 
 CCRing* createRing(unsigned long length) {
 
@@ -21,14 +22,17 @@ CCRing* createRing(unsigned long length) {
     return NULL;
   }
 
+  // initialize length
   ring->length = length;
-  ring->index_ring = 0;
+
+  // initialize index to last spot in data array
+  ring->index = length - 1;
 
   // initialize all data to zero
   memset(ring->data, 0, dataSize);
+
   return ring;
 }
-
 
 CCError freeRing(CCRing* pRing) {
   free(pRing->data);
@@ -36,19 +40,95 @@ CCError freeRing(CCRing* pRing) {
   return ccNoError;
 }
 
+CCError ccAppend(CCRing* pRing, ccAudioDataType arr[], unsigned long length) {
+  printf("%s\n", "<--- printing in");
 
-int ccAppend(CCRing* appendRing, ccAudioDataType array[], unsigned long length) {
+  for (unsigned long i = 0; i < length; i++) {
+    (pRing->index)++;
+    if ((pRing->index) >= (pRing->length)){
+      pRing->index = 0;
+    }
+    *(pRing->data + pRing->index) = *(arr + i);
+  }
+  return ccNoError;
+}
 
-      unsigned long index = appendRing->index_ring;
+CCError ccValidLen(CCRing* ring, unsigned long tap) {
+  if (tap > ring->length) return ccError;
 
-  for (unsigned long i = 0; i < length; ++i) {
-      unsigned long n = (index + i) % appendRing->length;
-      appendRing->data[n] = array[i];
+  if (tap < ring->index){
+    return ring->index - tap + 1;
+  }
+  else if (tap > ring->index){
+    return (ring->length - tap + ring->index + 1);
+  }
+  else if (tap == ring->index){
+    return 1;
+  }
 
-      if (i==(length - 1) ){
-        index = ((index + i + 1) % appendRing->length);
-        appendRing->index_ring = index;
+  return ccNoError;
+}
+
+CCError getSamples(CCRing* source, CCRing* target, unsigned long targetLen, unsigned long tap){
+  if (tap > source->length) return ccError;
+
+  unsigned long space = ccValidLen(source, tap);
+
+  if (space >= targetLen){
+
+    // create temp array to hold values from source to transfer to target
+    size_t dataSize = space * sizeof(ccAudioDataType);
+    ccAudioDataType* temp_array = (ccAudioDataType*) malloc(dataSize);
+
+    // appends temp_array with elements of source array that begin at 
+    if(tap <= source->index){
+      for (unsigned long i = 0; i < space; ++i){
+        temp_array[i] = source->data[tap + i];
       }
-   }
-  return 1;
+    }
+
+    if(tap > source->index){
+      for (unsigned long i = 0; i < space; ++i){
+        temp_array[i] = source->data[(tap + i)%source->length];
+      }
+    }
+
+    // appends temp_array to target
+    ccAppend(target, temp_array, targetLen);
+
+    free(temp_array);
+
+    return ccNoError;
+  }
+  else return ccError;
+}
+
+CCError ccGenerateSin(CCRing* sinusoid, double cycles) {
+  double distBetweenPoints = (2*PI)/sinusoid->length;
+  for (unsigned long i = 0; i < sinusoid->length; ++i) {
+    double n = i * distBetweenPoints;
+    *(sinusoid->data + i) = sin(cycles * n);
+  }
+  return ccNoError;
+}
+
+CCError ccMultiply(CCRing* target, CCRing* source) {
+  if (target->length != source->length) {
+    return ccBufferSizeMismatch;
+  }
+  for (unsigned long i = 0; i < target->length; i++) {
+    *(target->data + i) = *(target->data + i) * *(source->data + i);
+  }
+  return ccNoError;
+}
+
+CCError plot(CCRing* ring){
+  FILE *gnuplot = popen("gnuplot -persis", "w");
+  fprintf(gnuplot, "plot '-' with points pointtype 7\n");
+  for (unsigned long i = 0; i < ring->length; i++){
+    fprintf(gnuplot, "%lu %g\n", i, ring->data[i]);
+    //fprintf(gnuplot, "e\n");
+  }
+  fflush(gnuplot);
+  return ccNoError;
 }

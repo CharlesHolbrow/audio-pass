@@ -84,7 +84,7 @@ bin/pass : $(O_FILES)
 # and a %.h file. Example usage:
 # $ make testCCRing
 bin/test% : $(O_DIR)/test%.o $(O_DIR)/%.o $(I_DIR)/%.h
-	$(CC) -o ./bin/test$* $< $(O_DIR)/$*.o $(CFLAGS) -L$(CUNIT_LIB_DIR) -lcunit
+	$(CC) -o ./bin/test$* $< $(O_DIR)/$*.o $(CFLAGS) -L$(CUNIT_LIB_DIR) -lcunit -lm
 
 tests: $(patsubst %, bin/%, $(TESTS))
 
