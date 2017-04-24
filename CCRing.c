@@ -5,7 +5,7 @@
 #include "CCRing.h"
 #define PI 3.14159265
 
-CCRing* createRing(unsigned long length) {
+CCRing* createRing(unsigned long length){
 
   CCRing* ring = (CCRing*) malloc(sizeof(CCRing));
   if (ring == NULL) {
@@ -34,7 +34,7 @@ CCRing* createRing(unsigned long length) {
   return ring;
 }
 
-CCError freeRing(CCRing* pRing) {
+CCError freeRing(CCRing* pRing){
   free(pRing->data);
   free(pRing);
   return ccNoError;
@@ -51,7 +51,7 @@ CCError ccAppend(CCRing* pRing, ccAudioDataType arr[], unsigned long length) {
   return ccNoError;
 }
 
-CCError ccValidLen(CCRing* ring, unsigned long tap) {
+CCError ccValidLen(CCRing* ring, unsigned long tap){
   if (tap > ring->length) return ccError;
 
   if (tap < ring->index){
@@ -101,7 +101,7 @@ CCError getSamples(CCRing* source, CCRing* target, unsigned long targetLen, unsi
   else return ccError;
 }
 
-CCError ccGenerateSin(CCRing* sinusoid, double cycles) {
+CCError ccGenerateSin(CCRing* sinusoid, double cycles){
   double distBetweenPoints = (2*PI)/sinusoid->length;
   for (unsigned long i = 0; i < sinusoid->length; ++i) {
     double n = i * distBetweenPoints;
@@ -110,11 +110,11 @@ CCError ccGenerateSin(CCRing* sinusoid, double cycles) {
   return ccNoError;
 }
 
-CCError ccMultiply(CCRing* target, CCRing* source) {
+CCError ccMultiply(CCRing* target, CCRing* source){
   if (target->length != source->length) {
     return ccBufferSizeMismatch;
   }
-  for (unsigned long i = 0; i < target->length; i++) {
+  for (unsigned long i = 0; i < target->length; ++i) {
     *(target->data + i) = *(target->data + i) * *(source->data + i);
   }
   return ccNoError;
@@ -128,5 +128,13 @@ CCError plot(CCRing* ring){
     //fprintf(gnuplot, "e\n");
   }
   fflush(gnuplot);
+  return ccNoError;
+}
+
+CCError ccHannWindow(CCRing* ring){
+  int N = ring->length;
+  for (int i = 0;  i < ring->length; ++i){
+    *(ring->data + i) = 0.5 * (1 - cos((2*PI*i)/(N - 1)));
+  }
   return ccNoError;
 }
