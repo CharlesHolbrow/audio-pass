@@ -8,8 +8,8 @@
 
 typedef struct
 {
-  float left_phase;
-  float right_phase;
+  CCRing* ring;
+  unsigned long tap;
 }   
 paTestData;
 
@@ -29,7 +29,10 @@ static int patestCallback(const void *inputBuffer,
 {
   float* in = (float*)inputBuffer;
   float* out = (float*)outputBuffer;
-  CCRing* ring = (CCRing*)userData;
+
+  paTestData* data = (paTestData*) userData;
+
+  CCRing* ring = data->ring;
   ccAppend(ring, in, framesPerBuffer);
 
   counter ++;
@@ -46,6 +49,8 @@ static int patestCallback(const void *inputBuffer,
 
 int main(int argc, char** argv) {
 
+  paTestData data;
+
   const PaVersionInfo* info;
   PaError err;
   PaStream *stream;
@@ -55,6 +60,8 @@ int main(int argc, char** argv) {
     printf("%s", "Failed to create ring");
     return EXIT_FAILURE;
   }
+
+  data.ring = ring;
 
   // get and display the Port audio version in use
   info = Pa_GetVersionInfo();
@@ -80,7 +87,7 @@ int main(int argc, char** argv) {
                                           tells PortAudio to pick the best,
                                           possibly changing, buffer size.*/
                               patestCallback, /* this is your callback function */
-                              ring); /* This is a pointer that will be passed to
+                              &data); /* This is a pointer that will be passed to
                                       your callback*/
   
 

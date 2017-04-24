@@ -41,8 +41,6 @@ CCError freeRing(CCRing* pRing) {
 }
 
 CCError ccAppend(CCRing* pRing, ccAudioDataType arr[], unsigned long length) {
-  printf("%s\n", "<--- printing in");
-
   for (unsigned long i = 0; i < length; i++) {
     (pRing->index)++;
     if ((pRing->index) >= (pRing->length)){
