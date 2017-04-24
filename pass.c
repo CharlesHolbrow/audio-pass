@@ -12,7 +12,8 @@ typedef struct
   float right_phase;
 }   
 paTestData;
-static paTestData data;
+
+float counter = 0;
 
 
 /* This routine will be called by the PortAudio engine when audio is needed.
@@ -26,25 +27,24 @@ static int patestCallback(const void *inputBuffer,
                           PaStreamCallbackFlags statusFlags,
                           void *userData )
 {
-  /* Cast data passed through stream to our structure. */
-  paTestData *data = (paTestData*)userData; 
-  float *out = (float*)outputBuffer;
-  unsigned int i;
-  (void) inputBuffer; /* Prevent unused variable warning. */
-  
-  for( i=0; i<framesPerBuffer; i++ )
-  {
-    *out++ = data->left_phase;  /* left */
-    *out++ = data->right_phase;  /* right */
-    /* Generate simple sawtooth phaser that ranges between -1.0 and 1.0. */
-    data->left_phase += 0.01f;
-    /* When signal reaches top, drop back down. */
-    if( data->left_phase >= 1.0f ) data->left_phase -= 2.0f;
-    /* higher pitch so we can distinguish left and right. */
-    data->right_phase += 0.03f;
-    if( data->right_phase >= 1.0f ) data->right_phase -= 2.0f;
+  float* in = (float*)inputBuffer;
+  float* out = (float*)outputBuffer;
+  printf("%s", "ANOTHER PRINTF\n");
+  CCRing* ring = (CCRing*)userData;
+  printf("%lu\n", ring->length);
+
+ // printf("%s %lu", "\nPRINTING IN: \n", in);
+
+  ccAppend(ring, in, 256);
+
+  printf("%f", *(ring->data));
+  counter ++;
+
+  if (counter == 3) plot(ring);
+
+  for (int i; i< framesPerBuffer; i ++){
+    out[i] = in[i];
   }
-  return 0;
 }
 
 
@@ -54,6 +54,12 @@ int main(int argc, char** argv) {
   const PaVersionInfo* info;
   PaError err;
   PaStream *stream;
+  
+  CCRing* ring = createRing(SAMPLE_RATE * 0.01);
+  if (ring == NULL){
+    printf("%s", "Failed to create ring");
+    return EXIT_FAILURE;
+  }
 
   // get and display the Port audio version in use
   info = Pa_GetVersionInfo();
@@ -67,8 +73,8 @@ int main(int argc, char** argv) {
 
   /* Open an audio I/O stream. */
   err = Pa_OpenDefaultStream( &stream,
-                              0,          /* no input channels */
-                              2,          /* stereo output */
+                              1,          /* no input channels */
+                              1,          /* stereo output */
                               paFloat32,  /* 32 bit floating point output */
                               SAMPLE_RATE,
                               256,        /* frames per buffer, i.e. the number
@@ -79,8 +85,10 @@ int main(int argc, char** argv) {
                                           tells PortAudio to pick the best,
                                           possibly changing, buffer size.*/
                               patestCallback, /* this is your callback function */
-                              &data); /* This is a pointer that will be passed to
+                              ring); /* This is a pointer that will be passed to
                                       your callback*/
+  
+
   if (err != paNoError) {
     goto error;
   }
@@ -91,7 +99,7 @@ int main(int argc, char** argv) {
     goto error;
   }
   // Wait
-  Pa_Sleep(2 * 1000); 
+  Pa_Sleep(10 * 1000); 
   // Stop playback
   err = Pa_StopStream(stream);
   if (err != paNoError) {
