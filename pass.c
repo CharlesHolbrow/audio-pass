@@ -29,22 +29,17 @@ static int patestCallback(const void *inputBuffer,
 {
   float* in = (float*)inputBuffer;
   float* out = (float*)outputBuffer;
-  printf("%s", "ANOTHER PRINTF\n");
   CCRing* ring = (CCRing*)userData;
-  printf("%lu\n", ring->length);
+  ccAppend(ring, in, framesPerBuffer);
 
- // printf("%s %lu", "\nPRINTING IN: \n", in);
-
-  ccAppend(ring, in, 256);
-
-  printf("%f", *(ring->data));
   counter ++;
 
-  if (counter == 3) plot(ring);
+  if (counter == 15) plot(ring);
 
   for (int i; i< framesPerBuffer; i ++){
     out[i] = in[i];
   }
+  return 0;
 }
 
 
@@ -55,7 +50,7 @@ int main(int argc, char** argv) {
   PaError err;
   PaStream *stream;
   
-  CCRing* ring = createRing(SAMPLE_RATE * 0.01);
+  CCRing* ring = createRing(SAMPLE_RATE * 0.1);
   if (ring == NULL){
     printf("%s", "Failed to create ring");
     return EXIT_FAILURE;
