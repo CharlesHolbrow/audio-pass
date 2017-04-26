@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <portaudio.h>
 
+#include "portaudio.h"
 #include "CCRing.h"
 
 #define SAMPLE_RATE (44100)
@@ -40,18 +40,16 @@ static int patestCallback(const void *inputBuffer,
   if (counter == 15) plot(ring);
 
   for (int i; i< framesPerBuffer; i ++){
-    out[i] = in[i];
+    *out++ = *in++;
+    *out++ = *in++;
   }
   return 0;
 }
 
 
-
 int main(int argc, char** argv) {
 
   paTestData data;
-
-  const PaVersionInfo* info;
   PaError err;
   PaStream *stream;
   
@@ -64,33 +62,56 @@ int main(int argc, char** argv) {
   data.ring = ring;
 
   // get and display the Port audio version in use
-  info = Pa_GetVersionInfo();
+  const PaVersionInfo* info = Pa_GetVersionInfo();
   printf("%s\n", info->versionText);
-
 
   err = Pa_Initialize();
   if (err != paNoError) {
     goto error;
   }
 
-  /* Open an audio I/O stream. */
-  err = Pa_OpenDefaultStream( &stream,
-                              1,          /* no input channels */
-                              1,          /* stereo output */
-                              paFloat32,  /* 32 bit floating point output */
-                              SAMPLE_RATE,
-                              256,        /* frames per buffer, i.e. the number
-                                          of sample frames that PortAudio will
-                                          request from the callback. Many apps
-                                          may want to use
-                                          paFramesPerBufferUnspecified, which
-                                          tells PortAudio to pick the best,
-                                          possibly changing, buffer size.*/
-                              patestCallback, /* this is your callback function */
-                              &data); /* This is a pointer that will be passed to
-                                      your callback*/
-  
+  // print out list of devices
+  const PaDeviceInfo * deviceInfo;
+  PaDeviceIndex numDevices = Pa_GetDeviceCount();
+  printf("Found %d device(s)\n", numDevices);
+  for (int i=0; i<numDevices; i++) {
+    deviceInfo = Pa_GetDeviceInfo(i);
+    printf("D%d: %s\n", i, deviceInfo->name);
+  }
 
+
+  int outDevice = 1;
+  PaStreamParameters out;
+  out.device = outDevice;
+  out.channelCount = 2;
+  out.sampleFormat = paFloat32;
+  out.suggestedLatency = Pa_GetDeviceInfo(outDevice)->defaultLowOutputLatency;
+  out.hostApiSpecificStreamInfo = NULL;
+
+  int inDevice = 0;
+  PaStreamParameters in;
+  in.device = inDevice;
+  in.channelCount = 2;
+  in.sampleFormat = paFloat32;
+  in.suggestedLatency = Pa_GetDeviceInfo(inDevice)->defaultLowInputLatency;
+  in.hostApiSpecificStreamInfo = NULL;
+
+  /* Open an audio I/O stream. */
+  err = Pa_OpenStream(&stream,
+                      &in,
+                      &out,
+                      SAMPLE_RATE,
+                      256,        /* frames per buffer, i.e. the number
+                                  of sample frames that PortAudio will
+                                  request from the callback. Many apps
+                                  may want to use
+                                  paFramesPerBufferUnspecified, which
+                                  tells PortAudio to pick the best,
+                                  possibly changing, buffer size.*/
+                      paNoFlag,
+                      patestCallback, /* this is your callback function */
+                      &data); /* will be passed to your callback*/
+  
   if (err != paNoError) {
     goto error;
   }
