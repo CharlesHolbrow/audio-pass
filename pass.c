@@ -32,14 +32,14 @@ static int patestCallback(const void *inputBuffer,
 
   paTestData* data = (paTestData*) userData;
 
-  CCRing* ring = data->ring;
-  ccAppend(ring, in, framesPerBuffer);
+  // CCRing* ring = data->ring;
+  // ccAppend(ring, in, framesPerBuffer);
+  // counter++; if (counter == 15) plot(ring);
 
-  counter ++;
+  for (int i; i< framesPerBuffer; i++){
+    // if (i < 128) *out++ = -0.1;
+    // else *out++ = 0.1;
 
-  if (counter == 15) plot(ring);
-
-  for (int i; i< framesPerBuffer; i ++){
     *out++ = *in++;
     *out++ = *in++;
   }
@@ -79,29 +79,45 @@ int main(int argc, char** argv) {
     printf("D%d: %s\n", i, deviceInfo->name);
   }
 
+  int inDevice, outDevice;
+  if (argc == 1) {
+    inDevice = Pa_GetDefaultInputDevice();
+    outDevice = Pa_GetDefaultOutputDevice();
+  } else if (argc == 2) {
+    inDevice = atoi(argv[1]);
+    outDevice = inDevice;
+  } else if (argc >= 3) {
+    inDevice = atoi(argv[1]);
+    outDevice = atoi(argv[2]);
+  }
 
-  int outDevice = 1;
-  PaStreamParameters out;
+  PaStreamParameters in, out;
+  const PaDeviceInfo *inInfo;
+  const PaDeviceInfo *outInfo;
+
+  inInfo = Pa_GetDeviceInfo(inDevice);
+  in.device = inDevice;
+  in.channelCount = 1;
+  in.sampleFormat = paFloat32;
+  in.suggestedLatency = inInfo->defaultLowInputLatency;
+  in.hostApiSpecificStreamInfo = NULL;
+
+  outInfo = Pa_GetDeviceInfo(outDevice);
   out.device = outDevice;
-  out.channelCount = 2;
+  out.channelCount = 1;
   out.sampleFormat = paFloat32;
-  out.suggestedLatency = Pa_GetDeviceInfo(outDevice)->defaultLowOutputLatency;
+  out.suggestedLatency = outInfo->defaultLowOutputLatency;
   out.hostApiSpecificStreamInfo = NULL;
 
-  int inDevice = 0;
-  PaStreamParameters in;
-  in.device = inDevice;
-  in.channelCount = 2;
-  in.sampleFormat = paFloat32;
-  in.suggestedLatency = Pa_GetDeviceInfo(inDevice)->defaultLowInputLatency;
-  in.hostApiSpecificStreamInfo = NULL;
+  printf("Input:  %s\n", inInfo->name);
+  printf("Output: %s\n", outInfo->name);
 
   /* Open an audio I/O stream. */
   err = Pa_OpenStream(&stream,
                       &in,
                       &out,
                       SAMPLE_RATE,
-                      256,        /* frames per buffer, i.e. the number
+                      512,        /* frames per buffer, i.e. the number
                                   of sample frames that PortAudio will
                                   request from the callback. Many apps
                                   may want to use
@@ -121,8 +137,9 @@ int main(int argc, char** argv) {
   if (err != paNoError) {
     goto error;
   }
+
   // Wait
-  Pa_Sleep(10 * 1000); 
+  Pa_Sleep(5 * 1000);
   // Stop playback
   err = Pa_StopStream(stream);
   if (err != paNoError) {
