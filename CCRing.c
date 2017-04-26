@@ -40,7 +40,7 @@ CCError freeRing(CCRing* pRing){
   return ccNoError;
 }
 
-CCError ccAppend(CCRing* pRing, ccAudioDataType arr[], unsigned long length) {
+CCError ccAppend(CCRing* pRing, const ccAudioDataType arr[], unsigned long length) {
   for (unsigned long i = 0; i < length; i++) {
     (pRing->index)++;
     if ((pRing->index) >= (pRing->length)){

@@ -13,8 +13,6 @@ typedef struct
 }   
 paTestData;
 
-float counter = 0;
-
 
 /* This routine will be called by the PortAudio engine when audio is needed.
    It may called at interrupt level on some machines so don't do anything
@@ -25,24 +23,28 @@ static int patestCallback(const void *inputBuffer,
                           unsigned long framesPerBuffer,
                           const PaStreamCallbackTimeInfo* timeInfo,
                           PaStreamCallbackFlags statusFlags,
-                          void *userData )
+                          void *userData)
 {
-  float* in = (float*)inputBuffer;
-  float* out = (float*)outputBuffer;
+  // Why does this line of code cause problems? If it is placed before modifying
+  // the out buffer, the out buffer contains silence. It seems quite strange
+  // that merely declaring a pointer would have this effect.
+  //CCRing *ring;
+  // We cannot declare any other variables without causing this problem. I don't
+  // know why there is an exception for casting other variables.
+  //
+  // However, it seems to work fine if the variables are static.
+
+  const float *in = (const float*)inputBuffer;
+  float *out = (float*)outputBuffer;
 
   paTestData* data = (paTestData*) userData;
-
-  // CCRing* ring = data->ring;
-  // ccAppend(ring, in, framesPerBuffer);
-  // counter++; if (counter == 15) plot(ring);
+  ccAppend(data->ring, in, framesPerBuffer);
 
   for (int i; i< framesPerBuffer; i++){
-    // if (i < 128) *out++ = -0.1;
-    // else *out++ = 0.1;
-
     *out++ = *in++;
-    *out++ = *in++;
+    *out++ = (*in++);
   }
+
   return 0;
 }
 
@@ -97,14 +99,14 @@ int main(int argc, char** argv) {
 
   inInfo = Pa_GetDeviceInfo(inDevice);
   in.device = inDevice;
-  in.channelCount = 1;
+  in.channelCount = 2;
   in.sampleFormat = paFloat32;
   in.suggestedLatency = inInfo->defaultLowInputLatency;
   in.hostApiSpecificStreamInfo = NULL;
 
   outInfo = Pa_GetDeviceInfo(outDevice);
   out.device = outDevice;
-  out.channelCount = 1;
+  out.channelCount = 2;
   out.sampleFormat = paFloat32;
   out.suggestedLatency = outInfo->defaultLowOutputLatency;
   out.hostApiSpecificStreamInfo = NULL;
@@ -117,7 +119,7 @@ int main(int argc, char** argv) {
                       &in,
                       &out,
                       SAMPLE_RATE,
-                      512,        /* frames per buffer, i.e. the number
+                      256,        /* frames per buffer, i.e. the number
                                   of sample frames that PortAudio will
                                   request from the callback. Many apps
                                   may want to use
