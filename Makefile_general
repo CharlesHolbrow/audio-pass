@@ -1,0 +1,12 @@
+
+FFT_C_FILES := ../kissfft/test/kiss_fft_test.c ../kissfft/kiss_fft.c ../kissfft/tools/kiss_fftr.c 
+CFLAGS := -I ../kissfft -I ../kissfft/tools/ 
+
+all: bin/kiss_fft_test
+
+bin/kiss_fft_test: $(FFT_C_FILES) 
+	gcc -g -lm $(FFT_C_FILES) $(CFLAGS) -o $@
+
+clean:  
+	rm -f bin/kiss_fft_test 
+	rm -R -f bin/kiss_fft_test.dSYM
