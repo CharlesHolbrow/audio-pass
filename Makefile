@@ -66,6 +66,13 @@ KISSFFT_DIR := ../kissfft
 KISSFFT_TOOLS_DIR := $(KISSFFT_DIR)/tools
 KISSFFT_O_FILES := $(O_DIR)/kiss_fft_test.o $(O_DIR)/kiss_fft.o $(O_DIR)/kiss_fftr.o
 
+# If both a static and a shared lib are available, gcc links the
+# shared lib. Pass in the .libportaudio.a directly to avoid
+# issues. This is an alternative to the traditional aproach of
+# using the -l and -L: $ gcc -L$(PORTAUDIO_LIB_DIR) -lportaudio
+bin/pass : $(O_FILES)
+	$(CC) $(O_FILES) $(PORTAUDIO_LIB) $(STATIC_OPTIONS) -o $@
+
 bin/kiss_fft_test: $(KISSFFT_O_FILES)
 	gcc $(KISSFFT_O_FILES) -o $@ 
 
@@ -88,13 +95,6 @@ $(O_DIR)/%.o : %.c $(H_FILES)
 # .c files.
 $(O_DIR)/%.o : $(T_DIR)/%.c $(H_FILES)
 	$(CC) -c -o $@ $< $(CFLAGS)
-
-# If both a static and a shared lib are available, gcc links the
-# shared lib. Pass in the .libportaudio.a directly to avoid
-# issues. This is an alternative to the traditional aproach of
-# using the -l and -L: $ gcc -L$(PORTAUDIO_LIB_DIR) -lportaudio
-bin/pass : $(O_FILES)
-	$(CC) $(O_FILES) $(PORTAUDIO_LIB) $(STATIC_OPTIONS) -o $@
 
 # This is a 'static pattern rule' so "$*" in the recipe matches
 # the the part of the filename that matched % in the target
