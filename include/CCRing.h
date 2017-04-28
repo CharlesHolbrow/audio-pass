@@ -39,7 +39,7 @@ CCError freeRing(CCRing* pRing);
 records a pointer where the last change was made to the Ring
 and appends at the position of the pointer with each new
 append. */
-CCError ccAppend(CCRing* pRing, ccAudioDataType arr[], unsigned long length);
+CCError ccAppend(CCRing* pRing, const ccAudioDataType arr[], unsigned long length);
 
 /* ccGenerateSin takes in a pointer to a CCRing, and the # of cycles
 for the resulting standard sinusoid (A = 1, phi = 0). It returns evenly 
@@ -62,4 +62,7 @@ CCError getSamples(CCRing* source, CCRing* target, unsigned long targetLen, unsi
 
 /* plots the data array from a ccRing */
 CCError plot(CCRing* ring);
+
+/* ccHannWindow generates a Hann Window function and stores it in a CCRing */
+CCError ccHannWindow(CCRing* ring);
 #endif
