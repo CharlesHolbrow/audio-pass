@@ -208,6 +208,15 @@ void testHannWindow(void) {
   plot(ring1);
 }
 
+void testHinvBuf(void) {
+  CCRing* ring1 = createRing(30);
+  ccAudioDataType hinv[5] = {};
+  ccHinvBuf(ring1);
+  // CU_ASSERT_TRUE(compare_float_array(ring1->data, hinv, 5))
+
+  plot(ring1);
+}
+
 void testPlot(void) {
   CCRing* ring = createRing(5);
   ccAudioDataType a[5] = {50, 4, 3, 4, 6};
@@ -238,6 +247,7 @@ int main(int argc, char** argv) {
   CU_pTest t10 = CU_add_test(ccr_suite, "Test getSamples", testGetSamples);
   CU_pTest t11 = CU_add_test(ccr_suite, "Test Plot", testPlot);
   CU_pTest t12 = CU_add_test(ccr_suite, "Test Hann Window", testHannWindow);
+  CU_pTest t13 = CU_add_test(ccr_suite, "Test Tremolo Compensation", testHinvBuf);
 
   if (ccr_suite == NULL) {
     // check the framework error code

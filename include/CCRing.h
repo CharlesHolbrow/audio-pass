@@ -65,4 +65,7 @@ CCError plot(CCRing* ring);
 
 /* ccHannWindow generates a Hann Window function and stores it in a CCRing */
 CCError ccHannWindow(CCRing* ring);
+
+/* ccHinvBuf generates a function that compensates for tremelo */
+CCError ccHinvBuf(CCRing* ring);
 #endif

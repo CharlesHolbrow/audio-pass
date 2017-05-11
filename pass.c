@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <portaudio.h>
 
+#include "kiss_fftr.h"
 #include "CCRing.h"
 
 #define SAMPLE_RATE (44100)
@@ -88,7 +89,7 @@ int main(int argc, char** argv) {
                                           possibly changing, buffer size.*/
                               patestCallback, /* this is your callback function */
                               &data); /* This is a pointer that will be passed to
-                                      your callback*/
+                                      your callback*/                          
   
 
   if (err != paNoError) {

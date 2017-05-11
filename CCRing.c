@@ -138,3 +138,13 @@ CCError ccHannWindow(CCRing* ring){
   }
   return ccNoError;
 }
+
+CCError ccHinvBuf(CCRing* ring){
+  int half = (ring->length)/2;
+  float hinv_sq = (1 + sqrt(0.5)) * 0.5;
+  for(int i = 0; i < half; ++i){
+    *(ring->data + i) = hinv_sq - ((1 - hinv_sq) * (cos((2*PI*i)/(half))));
+  }
+  return ccNoError;
+}
+
