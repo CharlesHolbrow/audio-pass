@@ -1,11 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-<<<<<<< HEAD
-#include "kiss_fftr.h"
-=======
 #include "portaudio.h"
->>>>>>> 7e9fa3c97dda44e205f3e1d6c4581bc64bb6b33e
 #include "CCRing.h"
 
 #define SAMPLE_RATE (44100)
