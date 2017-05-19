@@ -64,10 +64,10 @@ TESTS = $(patsubst %.c, %, $(TEST_C_FILES))
 # from the O_DIR.
 KISSFFT_DIR := ../kissfft
 KISSFFT_TOOLS_DIR := $(KISSFFT_DIR)/tools
-KISSFFT_O_FILES := $(O_DIR)/kiss_fft_test.o $(O_DIR)/kiss_fft.o $(O_DIR)/kiss_fftr.o
+KISSFFT_O_FILES := $(O_DIR)/kiss_fft.o $(O_DIR)/kiss_fftr.o
 
-bin/kiss_fft_test: $(KISSFFT_O_FILES)
-	gcc $(KISSFFT_O_FILES) -o $@ 
+bin/kiss_fft_test: $(KISSFFT_O_FILES) $(O_DIR)/kiss_fft_test.o 
+	gcc $(KISSFFT_O_FILES) $(O_DIR)/kiss_fft_test.o  -o $@ 
 
 $(O_DIR)/kiss_fft.o: ../kissfft/kiss_fft.c 
 	gcc -c $< -I $(KISSFFT_TOOLS_DIR) -I $(KISSFFT_DIR) -o $@
@@ -93,8 +93,8 @@ $(O_DIR)/%.o : $(T_DIR)/%.c $(H_FILES)
 # shared lib. Pass in the .libportaudio.a directly to avoid
 # issues. This is an alternative to the traditional aproach of
 # using the -l and -L: $ gcc -L$(PORTAUDIO_LIB_DIR) -lportaudio
-bin/pass : $(O_FILES)
-	$(CC) $(O_FILES) $(PORTAUDIO_LIB) $(STATIC_OPTIONS) -o $@
+bin/pass : $(O_FILES) $(KISSFFT_O_FILES)
+	$(CC) $(O_FILES) $(KISSFFT_O_FILES) $(PORTAUDIO_LIB) $(STATIC_OPTIONS) -o $@
 
 # This is a 'static pattern rule' so "$*" in the recipe matches
 # the the part of the filename that matched % in the target

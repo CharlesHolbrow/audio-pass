@@ -4,11 +4,18 @@
 #include "portaudio.h"
 #include "CCRing.h"
 
+#include "kiss_fftr.h"
+#include "kiss_fft.h"
+
 #define SAMPLE_RATE (44100)
+#define FRAMES_PER_BUFFER (256)
 
 typedef struct
 {
   CCRing* ring;
+  CCRing* temp;
+  kiss_fftr_cfg cfg;
+  kiss_fftr_cfg cfgi;
   unsigned long tap;
 }   
 paTestData;
@@ -40,10 +47,14 @@ static int patestCallback(const void *inputBuffer,
   paTestData* data = (paTestData*) userData;
   ccAppend(data->ring, in, framesPerBuffer);
 
-  for (int i; i< framesPerBuffer; i++){
-    *out++ = *in++;
-    *out++ = (*in++);
-  }
+  kiss_fftr(data->cfg, data->ring->data, data->temp->data);
+  kiss_fftri(data->cfgi, data->temp->data, out);
+
+  // for (int i; i < framesPerBuffer; i++){
+    
+  //   *out++ = *in++;
+  //   // *out++ = (*in++);
+  // }
 
   return 0;
 }
@@ -56,12 +67,23 @@ int main(int argc, char** argv) {
   PaStream *stream;
   
   CCRing* ring = createRing(SAMPLE_RATE * 0.1);
+  CCRing* temp = createRing(2 * SAMPLE_RATE * 0.1);
+
+
   if (ring == NULL){
     printf("%s", "Failed to create ring");
     return EXIT_FAILURE;
   }
 
+  if (temp == NULL){
+    printf("%s", "Failed to create temp");
+    return EXIT_FAILURE;
+  }
+
   data.ring = ring;
+  data.temp = temp;
+  data.cfg = kiss_fftr_alloc(FRAMES_PER_BUFFER, 0, 0, 0);
+  data.cfgi = kiss_fftr_alloc(FRAMES_PER_BUFFER, 1, 0, 0);
 
   // get and display the Port audio version in use
   const PaVersionInfo* info = Pa_GetVersionInfo();
@@ -99,14 +121,14 @@ int main(int argc, char** argv) {
 
   inInfo = Pa_GetDeviceInfo(inDevice);
   in.device = inDevice;
-  in.channelCount = 2;
+  in.channelCount = 1;
   in.sampleFormat = paFloat32;
   in.suggestedLatency = inInfo->defaultLowInputLatency;
   in.hostApiSpecificStreamInfo = NULL;
 
   outInfo = Pa_GetDeviceInfo(outDevice);
   out.device = outDevice;
-  out.channelCount = 2;
+  out.channelCount = 1;
   out.sampleFormat = paFloat32;
   out.suggestedLatency = outInfo->defaultLowOutputLatency;
   out.hostApiSpecificStreamInfo = NULL;
@@ -120,7 +142,8 @@ int main(int argc, char** argv) {
                       &in,
                       &out,
                       SAMPLE_RATE,
-                      256,        /* frames per buffer, i.e. the number
+                      FRAMES_PER_BUFFER,    
+                                  /* frames per buffer, i.e. the number
                                   of sample frames that PortAudio will
                                   request from the callback. Many apps
                                   may want to use
