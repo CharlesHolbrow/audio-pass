@@ -30,7 +30,9 @@ O_DIR := .o
 I_DIR := include
 T_DIR := tests
 CC := gcc
-CFLAGS := -I$(I_DIR) -I$(PORTAUDIO_INC_DIR) -I$(CUNIT_INC_DIR)
+
+CFLAGS := -I$(I_DIR) -I$(PORTAUDIO_INC_DIR) -I$(CUNIT_INC_DIR) -I ../kissfft -I ../kissfft/tools/
+FFT_C_FILES := ../kissfft/kiss_fft.c ../kissfft/tools/kiss_fftr.c 
 
 # We need to pass in differnet options when linking (depending
 # on our platform). Here we support Linux and Darwin (OSX). When
@@ -58,6 +60,24 @@ TEST_C_FILES = $(shell find ./tests/* -type f -iname "*.c" -exec basename {} \;)
 TEST_O_FILES = $(patsubst %.c, $(O_DIR)/%.o, $(TEST_C_FILES))
 TESTS = $(patsubst %.c, %, $(TEST_C_FILES))
 
+# Create kiss fft .o files and place them in O_DIR. Link kiss fft .o files 
+# from the O_DIR.
+KISSFFT_DIR := ../kissfft
+KISSFFT_TOOLS_DIR := $(KISSFFT_DIR)/tools
+KISSFFT_O_FILES := $(O_DIR)/kiss_fft.o $(O_DIR)/kiss_fftr.o
+
+bin/kiss_fft_test: $(KISSFFT_O_FILES) $(O_DIR)/kiss_fft_test.o 
+	gcc $(KISSFFT_O_FILES) $(O_DIR)/kiss_fft_test.o  -o $@ 
+
+$(O_DIR)/kiss_fft.o: ../kissfft/kiss_fft.c 
+	gcc -c $< -I $(KISSFFT_TOOLS_DIR) -I $(KISSFFT_DIR) -o $@
+
+$(O_DIR)/kiss_fftr.o: ../kissfft/tools/kiss_fftr.c 
+	gcc -c $< -I $(KISSFFT_TOOLS_DIR) -I $(KISSFFT_DIR) -o $@
+
+$(O_DIR)/kiss_fft_test.o: tests/kiss_fft_test.c 
+	gcc -c $< -I $(KISSFFT_TOOLS_DIR) -I $(KISSFFT_DIR) -o $@
+
 # Note that each .o file depends on ALL the header files in the
 # include dir. This is slightly inefficient because if a single
 # header changes all .o files will be re-compiled.
@@ -73,20 +93,20 @@ $(O_DIR)/%.o : $(T_DIR)/%.c $(H_FILES)
 # shared lib. Pass in the .libportaudio.a directly to avoid
 # issues. This is an alternative to the traditional aproach of
 # using the -l and -L: $ gcc -L$(PORTAUDIO_LIB_DIR) -lportaudio
-bin/pass : $(O_FILES)
-	$(CC) $(O_FILES) $(PORTAUDIO_LIB) $(STATIC_OPTIONS) -o $@
+bin/pass : $(O_FILES) $(KISSFFT_O_FILES)
+	$(CC) $(O_FILES) $(KISSFFT_O_FILES) $(PORTAUDIO_LIB) $(STATIC_OPTIONS) -o $@
 
 # This is a 'static pattern rule' so "$*" in the recipe matches
 # the the part of the filename that matched % in the target
 # pattern.
 #
-# This rule lets uss write any test that depends on a %.o file
+# This rule lets us write any test that depends on a %.o file
 # and a %.h file. Example usage:
 # $ make testCCRing
 bin/test% : $(O_DIR)/test%.o $(O_DIR)/%.o $(I_DIR)/%.h
 	$(CC) -o ./bin/test$* $< $(O_DIR)/$*.o $(CFLAGS) -L$(CUNIT_LIB_DIR) -lcunit -lm
 
-tests: $(patsubst %, bin/%, $(TESTS))
+tests: $(patsubst %, bin/%, $(TESTS)) bin/kiss_fft_test
 
 .PHONY: clean debug tests
 .SECONDARY: $(O_FILES) $(TEST_O_FILES)
